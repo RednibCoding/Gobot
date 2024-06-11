@@ -12,7 +12,7 @@ From the root directory of the project:
 
 Create jar file
 ```
-ant compile
+ant jar
 ```
 
 ## General Script-Syntax
