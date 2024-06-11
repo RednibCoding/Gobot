@@ -19,7 +19,7 @@ public class ScriptProcessor {
     private Set<String> pressedKeys;
     private Color savedColor;
     private boolean executeNextLine;
-    private Map<Character, Integer> variables;  // Variables from 'a' to 'z'
+    private Map<String, Integer> variables;  // Variables with user-defined names
     private Map<String, Integer> labels;
 
     public ScriptProcessor() throws AWTException {
@@ -117,12 +117,8 @@ public class ScriptProcessor {
         keyMap.put("quote", KeyEvent.VK_QUOTE);
     }
     
-
     private void initializeVariables() {
-        variables = new HashMap<>();
-        for (char c = 'a'; c <= 'z'; c++) {
-            variables.put(c, 0);  // Initialize all variables to zero
-        }
+        variables = new HashMap<>();  // Initialize as an empty map, allowing dynamic variable creation
     }
 
     public void executeScript(String scriptPath) {
@@ -252,7 +248,7 @@ public class ScriptProcessor {
             
             case "ifnotpressed": {
                 if (args.length != 1) {
-                    System.out.println("Error on line " + lineNumber + ": ifpressed command requires exactly 1 argument");
+                    System.out.println("Error on line " + lineNumber + ": ifnotpressed command requires exactly 1 argument");
                     return -1;
                 }
                 String keystr = args[0].trim().toLowerCase();
@@ -336,82 +332,78 @@ public class ScriptProcessor {
                     System.out.println("Error on line " + lineNumber + ": set command requires exactly 2 arguments");
                     return -1;
                 }
-                char var = args[0].trim().toLowerCase().charAt(0);
-                if (var < 'a' || var > 'z') {
-                    System.out.println("Error on line " + lineNumber + ": Invalid variable name: " + var);
-                    return -1;
-                }
+                String varName = args[0].trim().toLowerCase();
                 int value = getValue(args[1].trim());
-                variables.put(var, value);
+                variables.put(varName, value);
                 break;
             case "add":
                 if (args.length != 2) {
                     System.out.println("Error on line " + lineNumber + ": add command requires exactly 2 arguments");
                     return -1;
                 }
-                var = args[0].trim().toLowerCase().charAt(0);
-                if (var < 'a' || var > 'z') {
-                    System.out.println("Error on line " + lineNumber + ": Invalid variable name: " + var);
+                varName = args[0].trim().toLowerCase();
+                if (!variables.containsKey(varName)) {
+                    System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
                     return -1;
                 }
                 value = getValue(args[1].trim());
-                variables.put(var, variables.get(var) + value);
+                variables.put(varName, variables.get(varName) + value);
                 break;
             case "sub":
                 if (args.length != 2) {
                     System.out.println("Error on line " + lineNumber + ": sub command requires exactly 2 arguments");
                     return -1;
                 }
-                var = args[0].trim().toLowerCase().charAt(0);
-                if (var < 'a' || var > 'z') {
-                    System.out.println("Error on line " + lineNumber + ": Invalid variable name: " + var);
+                varName = args[0].trim().toLowerCase();
+                if (!variables.containsKey(varName)) {
+                    System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
                     return -1;
                 }
                 value = getValue(args[1].trim());
-                variables.put(var, variables.get(var) - value);
+                variables.put(varName, variables.get(varName) - value);
                 break;
             case "ifequal":
                 if (args.length != 2) {
-                    System.out.println("Error on line " + lineNumber + ": ifvareq command requires exactly 2 arguments");
+                    System.out.println("Error on line " + lineNumber + ": ifequal command requires exactly 2 arguments");
                     return -1;
                 }
-                var = args[0].trim().toLowerCase().charAt(0);
-                if (var < 'a' || var > 'z') {
-                    System.out.println("Error on line " + lineNumber + ": Invalid variable name: " + var);
+                varName = args[0].trim().toLowerCase();
+                if (!variables.containsKey(varName)) {
+                    System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
                     return -1;
                 }
                 value = getValue(args[1].trim());
-                if (variables.get(var) != value) {
+                if (variables.get(varName) != value) {
                     executeNextLine = false; // Skip the next line
                 }
                 break;
             case "ifgreater":
                 if (args.length != 2) {
-                    System.out.println("Error on line " + lineNumber + ": ifvargr command requires exactly 2 arguments");
+                    System.out.println("Error on line " + lineNumber + ": ifgreater command requires exactly 2 arguments");
                     return -1;
                 }
-                var = args[0].trim().toLowerCase().charAt(0);
-                if (var < 'a' || var > 'z') {
-                    System.out.println("Error on line " + lineNumber + ": Invalid variable name: " + var);
+                varName = args[0].trim().toLowerCase();
+                if (!variables.containsKey(varName)) {
+                    System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
                     return -1;
                 }
                 value = getValue(args[1].trim());
-                if (variables.get(var) <= value) {
+                if (variables.get(varName) <= value) {
                     executeNextLine = false; // Skip the next line
                 }
                 break;
             case "ifless":
                 if (args.length != 2) {
-                    System.out.println("Error on line " + lineNumber + ": ifvarle command requires exactly 2 arguments");
+                    System.out.println("Error on line " + lineNumber + ": ifless command requires exactly 2 arguments");
                     return -1;
                 }
-                var = args[0].trim().toLowerCase().charAt(0);
-                if (var < 'a' || var > 'z') {
-                    System.out.println("Error on line " + lineNumber + ": Invalid variable name: " + var);
+                varName = args[0].trim().toLowerCase();
+                if (!variables.containsKey(varName)) {
+                    System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
                     return -1;
                 }
                 value = getValue(args[1].trim());
-                if (variables.get(var) >= value) {
+                if (variables.get(varName) >= value) {
                     executeNextLine = false; // Skip the next line
                 }
                 break;
@@ -420,12 +412,12 @@ public class ScriptProcessor {
                     System.out.println("Error on line " + lineNumber + ": printvar command requires exactly 1 argument");
                     return -1;
                 }
-                char varstr = args[0].trim().toLowerCase().charAt(0);
-                if (varstr < 'a' || varstr > 'z') {
-                    System.out.println("Error on line " + lineNumber + ": Invalid variable name: " + varstr);
+                varName = args[0].trim().toLowerCase();
+                if (!variables.containsKey(varName)) {
+                    System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
                     return -1;
                 }
-                System.out.print(variables.get(varstr));
+                System.out.print(variables.get(varName));
                 break;
             default:
                 System.out.println("Unknown command: " + command);
@@ -442,8 +434,8 @@ public class ScriptProcessor {
     }
 
     private int getValue(String arg) {
-        if (arg.length() == 1 && arg.charAt(0) >= 'a' && arg.charAt(0) <= 'z') {
-            return variables.get(arg.charAt(0));
+        if (variables.containsKey(arg)) {
+            return variables.get(arg);
         }
         return Integer.parseInt(arg);
     }
