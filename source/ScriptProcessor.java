@@ -189,11 +189,12 @@ public class ScriptProcessor {
                 int y = getValue(args[1].trim());
                 robot.mouseMove(x, y);
                 break;
-            case "press":
+            case "autopress":
                 if (args.length < 1) {
-                    System.out.println("Error on line " + lineNumber + ": press command requires at least 1 argument");
+                    System.out.println("Error on line " + lineNumber + ": autopress command requires at least 1 argument");
                     return -1;
                 }
+                Thread.sleep(40);
                 for (String arg : args) {
                     int key = keyMap.getOrDefault(arg.trim().toLowerCase(), -1);
                     if (key != -1) {
@@ -207,13 +208,9 @@ public class ScriptProcessor {
                         System.out.println("Error on line " + lineNumber + ": Invalid key: " + arg.trim());
                         return -1;
                     }
+                    Thread.sleep(40);
                 }
-                break;
-            case "release":
-                if (args.length < 1) {
-                    System.out.println("Error on line " + lineNumber + ": release command requires at least 1 argument");
-                    return -1;
-                }
+                Thread.sleep(40);
                 for (String arg : args) {
                     int key = keyMap.getOrDefault(arg.trim().toLowerCase(), -1);
                     if (key != -1) {
@@ -227,6 +224,52 @@ public class ScriptProcessor {
                         System.out.println("Error on line " + lineNumber + ": Invalid key: " + arg.trim());
                         return -1;
                     }
+                    Thread.sleep(40);
+                }
+                Thread.sleep(40);
+                break;
+            case "press":
+                if (args.length < 1) {
+                    System.out.println("Error on line " + lineNumber + ": press command requires at least 1 argument");
+                    return -1;
+                }
+                Thread.sleep(40);
+                for (String arg : args) {
+                    int key = keyMap.getOrDefault(arg.trim().toLowerCase(), -1);
+                    if (key != -1) {
+                        if (key == InputEvent.BUTTON1_DOWN_MASK || key == InputEvent.BUTTON3_DOWN_MASK) {
+                            robot.mousePress(key);
+                        } else {
+                            robot.keyPress(key);
+                        }
+                        pressedKeys.add(arg);
+                    } else {
+                        System.out.println("Error on line " + lineNumber + ": Invalid key: " + arg.trim());
+                        return -1;
+                    }
+                    Thread.sleep(40);
+                }
+                break;
+            case "release":
+                if (args.length < 1) {
+                    System.out.println("Error on line " + lineNumber + ": release command requires at least 1 argument");
+                    return -1;
+                }
+                Thread.sleep(40);
+                for (String arg : args) {
+                    int key = keyMap.getOrDefault(arg.trim().toLowerCase(), -1);
+                    if (key != -1) {
+                        if (key == InputEvent.BUTTON1_DOWN_MASK || key == InputEvent.BUTTON3_DOWN_MASK) {
+                            robot.mouseRelease(key);
+                        } else {
+                            robot.keyRelease(key);
+                        }
+                        pressedKeys.remove(arg);
+                    } else {
+                        System.out.println("Error on line " + lineNumber + ": Invalid key: " + arg.trim());
+                        return -1;
+                    }
+                    Thread.sleep(40);
                 }
                 break;
             case "ifpressed": {

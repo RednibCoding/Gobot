@@ -68,6 +68,11 @@ printnl
 - **Description**: Releases the specified keys.
 - **Example**: `release: lshift, a`
 
+### autopress
+- **Syntax**: `autopress: <key1>, <key2>, ...`
+- **Description**: Presses the specified keys, with a delay of 50 milliseconds and then releases the keys again
+- **Example**: `autopress: lshift, a`
+
 ### ifpressed
 - **Syntax**: `ifpressed: <key>`
 - **Description**: Executes the next command if the specified key is pressed.
