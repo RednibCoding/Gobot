@@ -16,6 +16,7 @@ ant
 ## General Script-Syntax
 - A script is composed of a list of [commands](#commands). See [Examples](#examples)
 - Commands that have arguments should be followed by a colon, and the arguments should be separated by commas.
+- Commands that have no arguments may not be followed by a colon.
 - A label should be defined by a leading `#` and can be referred to in a `goto` command.
 - Only one command or label can be on a line.
 - Lines starting with a `;` are considered comments and will be skipped.
