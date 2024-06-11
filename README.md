@@ -1,10 +1,10 @@
 
 # JBot Automation Tool
 
-JBot is an automation tool that allows you to script various keyboard and mouse actions, as well as conditional logic and variables. Below are the commands supported by JRobot and their functionalities.
+JBot is an automation tool that allows you to script various keyboard and mouse actions, as well as conditional logic and variables. Below are the commands supported by JBot and their functionalities.
 
 ## Dependencies
-Jrobot depends on the build tool [ant](https://ant.apache.org/)
+JBot depends on the build tool [ant](https://ant.apache.org/)
 
 ## Build
 From the root directory of the project, run: 
@@ -145,7 +145,7 @@ printnl
 ```
 print: Hello, World!
 printnl
-print: This is JRobot.
+print: This is JBot.
 printnl
 ```
 
@@ -211,4 +211,4 @@ printnl
 ```
 
 ## License
-JRobot is open-source software licensed under the MIT license.
+JBot is open-source software licensed under the MIT license.
