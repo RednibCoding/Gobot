@@ -12,7 +12,7 @@ From the root directory of the project, run:
 ant
 ```
 
-## Syntax
+## General Script-Syntax
 
 - Commands that have arguments should be followed by a colon, and the arguments should be separated by commas.
 - A label should be defined by a leading `#` and can be referred to in a `goto` command.
