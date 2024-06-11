@@ -53,6 +53,11 @@ printnl
 - **Description**: Prints a new line.
 - **Example**: `printnl`
 
+### println
+- **Syntax**: `println: <string>`
+- **Description**: Prints the given string and a new line.
+- **Example**: `println: Hello, World!`
+
 ### move
 - **Syntax**: `move: <x>, <y>`
 - **Description**: Moves the mouse to the specified coordinates.
