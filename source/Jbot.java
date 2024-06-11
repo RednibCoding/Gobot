@@ -1,12 +1,12 @@
 import java.awt.AWTException;
-// import java.util.ArrayList;
-// import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Jbot {
     public static void main(String[] args) {
-        // List<String> argstmp = new ArrayList<>();
-        // argstmp.add("script.txt");
-        // args = argstmp.toArray(new String[0]);
+        List<String> argstmp = new ArrayList<>();
+        argstmp.add("script.txt");
+        args = argstmp.toArray(new String[0]);
         
         if (args.length != 1) {
             System.out.println("Usage: java jbot <script-file>");

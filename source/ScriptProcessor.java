@@ -165,7 +165,7 @@ public class ScriptProcessor {
     }
 
     private int executeCommand(List<String> lines, String command, String[] args, int lineNumber) throws InterruptedException {
-        switch (command.toLowerCase()) {
+        switch (command) {
             case "print":
                 if (args.length != 1) {
                     System.out.println("Error on line " + lineNumber + ": print command requires exactly 1 argument");
@@ -196,7 +196,7 @@ public class ScriptProcessor {
                 }
                 Thread.sleep(80);
                 for (String arg : args) {
-                    int key = keyMap.getOrDefault(arg.trim().toLowerCase(), -1);
+                    int key = keyMap.getOrDefault(arg.trim(), -1);
                     if (key != -1) {
                         if (key == InputEvent.BUTTON1_DOWN_MASK || key == InputEvent.BUTTON3_DOWN_MASK) {
                             robot.mousePress(key);
@@ -212,7 +212,7 @@ public class ScriptProcessor {
                 }
                 Thread.sleep(80);
                 for (String arg : args) {
-                    int key = keyMap.getOrDefault(arg.trim().toLowerCase(), -1);
+                    int key = keyMap.getOrDefault(arg.trim(), -1);
                     if (key != -1) {
                         if (key == InputEvent.BUTTON1_DOWN_MASK || key == InputEvent.BUTTON3_DOWN_MASK) {
                             robot.mouseRelease(key);
@@ -235,7 +235,7 @@ public class ScriptProcessor {
                 }
                 Thread.sleep(40);
                 for (String arg : args) {
-                    int key = keyMap.getOrDefault(arg.trim().toLowerCase(), -1);
+                    int key = keyMap.getOrDefault(arg.trim(), -1);
                     if (key != -1) {
                         if (key == InputEvent.BUTTON1_DOWN_MASK || key == InputEvent.BUTTON3_DOWN_MASK) {
                             robot.mousePress(key);
@@ -257,7 +257,7 @@ public class ScriptProcessor {
                 }
                 Thread.sleep(40);
                 for (String arg : args) {
-                    int key = keyMap.getOrDefault(arg.trim().toLowerCase(), -1);
+                    int key = keyMap.getOrDefault(arg.trim(), -1);
                     if (key != -1) {
                         if (key == InputEvent.BUTTON1_DOWN_MASK || key == InputEvent.BUTTON3_DOWN_MASK) {
                             robot.mouseRelease(key);
@@ -277,7 +277,7 @@ public class ScriptProcessor {
                     System.out.println("Error on line " + lineNumber + ": ifpressed command requires exactly 1 argument");
                     return -1;
                 }
-                String keystr = args[0].trim().toLowerCase();
+                String keystr = args[0].trim();
                 int keyPressed = keyMap.getOrDefault(keystr, -1);
                 if (keyPressed == -1) {
                     System.out.println("Error on line " + lineNumber + ": Invalid key: " + keystr);
@@ -294,7 +294,7 @@ public class ScriptProcessor {
                     System.out.println("Error on line " + lineNumber + ": ifnotpressed command requires exactly 1 argument");
                     return -1;
                 }
-                String keystr = args[0].trim().toLowerCase();
+                String keystr = args[0].trim();
                 int keyPressed = keyMap.getOrDefault(keystr, -1);
                 if (keyPressed == -1) {
                     System.out.println("Error on line " + lineNumber + ": Invalid key: " + keystr);
@@ -359,6 +359,19 @@ public class ScriptProcessor {
                     executeNextLine = false; // Skip the next line
                 }
                 break;
+            case "printvar": {
+                if (args.length != 1) {
+                    System.out.println("Error on line " + lineNumber + ": printvar command requires exactly 1 argument");
+                    return -1;
+                }
+                String varName = args[0].trim();
+                if (!variables.containsKey(varName)) {
+                    System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
+                    return -1;
+                }
+                System.out.print(variables.get(varName));
+                break;
+            }
             case "goto":
                 if (args.length != 1) {
                     System.out.println("Error on line " + lineNumber + ": goto command requires exactly 1 argument");
@@ -375,7 +388,7 @@ public class ScriptProcessor {
                     System.out.println("Error on line " + lineNumber + ": set command requires exactly 2 arguments");
                     return -1;
                 }
-                String varName = args[0].trim().toLowerCase();
+                String varName = args[0].trim();
                 int value = getValue(args[1].trim());
                 variables.put(varName, value);
                 break;
@@ -384,7 +397,7 @@ public class ScriptProcessor {
                     System.out.println("Error on line " + lineNumber + ": add command requires exactly 2 arguments");
                     return -1;
                 }
-                varName = args[0].trim().toLowerCase();
+                varName = args[0].trim();
                 if (!variables.containsKey(varName)) {
                     System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
                     return -1;
@@ -397,7 +410,7 @@ public class ScriptProcessor {
                     System.out.println("Error on line " + lineNumber + ": sub command requires exactly 2 arguments");
                     return -1;
                 }
-                varName = args[0].trim().toLowerCase();
+                varName = args[0].trim();
                 if (!variables.containsKey(varName)) {
                     System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
                     return -1;
@@ -410,7 +423,7 @@ public class ScriptProcessor {
                     System.out.println("Error on line " + lineNumber + ": ifequal command requires exactly 2 arguments");
                     return -1;
                 }
-                varName = args[0].trim().toLowerCase();
+                varName = args[0].trim();
                 if (!variables.containsKey(varName)) {
                     System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
                     return -1;
@@ -425,7 +438,7 @@ public class ScriptProcessor {
                     System.out.println("Error on line " + lineNumber + ": ifgreater command requires exactly 2 arguments");
                     return -1;
                 }
-                varName = args[0].trim().toLowerCase();
+                varName = args[0].trim();
                 if (!variables.containsKey(varName)) {
                     System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
                     return -1;
@@ -440,7 +453,7 @@ public class ScriptProcessor {
                     System.out.println("Error on line " + lineNumber + ": ifless command requires exactly 2 arguments");
                     return -1;
                 }
-                varName = args[0].trim().toLowerCase();
+                varName = args[0].trim();
                 if (!variables.containsKey(varName)) {
                     System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
                     return -1;
@@ -449,18 +462,6 @@ public class ScriptProcessor {
                 if (variables.get(varName) >= value) {
                     executeNextLine = false; // Skip the next line
                 }
-                break;
-            case "printvar":
-                if (args.length != 1) {
-                    System.out.println("Error on line " + lineNumber + ": printvar command requires exactly 1 argument");
-                    return -1;
-                }
-                varName = args[0].trim().toLowerCase();
-                if (!variables.containsKey(varName)) {
-                    System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
-                    return -1;
-                }
-                System.out.print(variables.get(varName));
                 break;
             default:
                 System.out.println("Unknown command: " + command);
@@ -476,7 +477,7 @@ public class ScriptProcessor {
         return (rDiff <= threshold && gDiff <= threshold && bDiff <= threshold);
     }
 
-    private int getValue(String arg) {
+    private int getValue(String arg) throws NumberFormatException {
         if (variables.containsKey(arg)) {
             return variables.get(arg);
         }
