@@ -166,6 +166,13 @@ public class ScriptProcessor {
 
     private int executeCommand(List<String> lines, String command, String[] args, int lineNumber) throws InterruptedException {
         switch (command) {
+            case "println":
+                if (args.length != 1) {
+                    System.out.println("Error on line " + lineNumber + ": println command requires exactly 1 argument");
+                    return -1;
+                }
+                System.out.println(args[0].trim());
+                break;
             case "print":
                 if (args.length != 1) {
                     System.out.println("Error on line " + lineNumber + ": print command requires exactly 1 argument");
