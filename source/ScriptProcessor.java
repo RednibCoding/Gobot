@@ -155,8 +155,8 @@ public class ScriptProcessor {
 
                 int newLine = executeCommand(lines, command, args, i + 1);
                 if (newLine >= 0) {
-                    i = newLine - 1; // -1 because the for loop will increment i
-                } else {
+                    i = newLine - 1; // - 1 because the for loop will increment i
+                } else if (newLine == -2) {
                     System.exit(0);
                 }
             }
@@ -171,28 +171,28 @@ public class ScriptProcessor {
             case "println":
                 if (args.length != 1) {
                     System.out.println("Error on line " + lineNumber + ": println command requires exactly 1 argument");
-                    return -1;
+                    return -9;
                 }
                 System.out.println(args[0].trim());
                 break;
             case "print":
                 if (args.length != 1) {
                     System.out.println("Error on line " + lineNumber + ": print command requires exactly 1 argument");
-                    return -1;
+                    return -2;
                 }
                 System.out.print(args[0].trim());
                 break;
             case "printnl":
                 if (args.length != 0) {
                     System.out.println("Error on line " + lineNumber + ": printnl command requires no arguments");
-                    return -1;
+                    return -2;
                 }
                 System.out.print("\n");
                 break;
             case "move":
                 if (args.length != 2) {
                     System.out.println("Error on line " + lineNumber + ": move command requires exactly 2 arguments");
-                    return -1;
+                    return -2;
                 }
                 int x = getValue(args[0].trim());
                 int y = getValue(args[1].trim());
@@ -201,7 +201,7 @@ public class ScriptProcessor {
             case "autopress":
                 if (args.length < 1) {
                     System.out.println("Error on line " + lineNumber + ": autopress command requires at least 1 argument");
-                    return -1;
+                    return -2;
                 }
                 Thread.sleep(80);
                 for (String arg : args) {
@@ -215,7 +215,7 @@ public class ScriptProcessor {
                         pressedKeys.add(arg);
                     } else {
                         System.out.println("Error on line " + lineNumber + ": Invalid key: " + arg.trim());
-                        return -1;
+                        return -2;
                     }
                     Thread.sleep(80);
                 }
@@ -231,7 +231,7 @@ public class ScriptProcessor {
                         pressedKeys.remove(arg);
                     } else {
                         System.out.println("Error on line " + lineNumber + ": Invalid key: " + arg.trim());
-                        return -1;
+                        return -2;
                     }
                     Thread.sleep(80);
                 }
@@ -240,7 +240,7 @@ public class ScriptProcessor {
             case "press":
                 if (args.length < 1) {
                     System.out.println("Error on line " + lineNumber + ": press command requires at least 1 argument");
-                    return -1;
+                    return -2;
                 }
                 Thread.sleep(40);
                 for (String arg : args) {
@@ -254,7 +254,7 @@ public class ScriptProcessor {
                         pressedKeys.add(arg);
                     } else {
                         System.out.println("Error on line " + lineNumber + ": Invalid key: " + arg.trim());
-                        return -1;
+                        return -2;
                     }
                     Thread.sleep(40);
                 }
@@ -262,7 +262,7 @@ public class ScriptProcessor {
             case "release":
                 if (args.length < 1) {
                     System.out.println("Error on line " + lineNumber + ": release command requires at least 1 argument");
-                    return -1;
+                    return -2;
                 }
                 Thread.sleep(40);
                 for (String arg : args) {
@@ -276,7 +276,7 @@ public class ScriptProcessor {
                         pressedKeys.remove(arg);
                     } else {
                         System.out.println("Error on line " + lineNumber + ": Invalid key: " + arg.trim());
-                        return -1;
+                        return -2;
                     }
                     Thread.sleep(40);
                 }
@@ -284,13 +284,13 @@ public class ScriptProcessor {
             case "ifpressed": {
                 if (args.length != 1) {
                     System.out.println("Error on line " + lineNumber + ": ifpressed command requires exactly 1 argument");
-                    return -1;
+                    return -2;
                 }
                 String keystr = args[0].trim();
                 int keyPressed = keyMap.getOrDefault(keystr, -1);
                 if (keyPressed == -1) {
                     System.out.println("Error on line " + lineNumber + ": Invalid key: " + keystr);
-                    return -1;
+                    return -2;
                 }
                 if (!pressedKeys.contains(keystr)) {
                     executeNextLine = false; // Skip the next line if the key is not pressed
@@ -301,13 +301,13 @@ public class ScriptProcessor {
             case "ifnotpressed": {
                 if (args.length != 1) {
                     System.out.println("Error on line " + lineNumber + ": ifnotpressed command requires exactly 1 argument");
-                    return -1;
+                    return -2;
                 }
                 String keystr = args[0].trim();
                 int keyPressed = keyMap.getOrDefault(keystr, -1);
                 if (keyPressed == -1) {
                     System.out.println("Error on line " + lineNumber + ": Invalid key: " + keystr);
-                    return -1;
+                    return -2;
                 }
                 if (pressedKeys.contains(keystr)) {
                     executeNextLine = false; // Skip the next line if the key is pressed
@@ -317,7 +317,7 @@ public class ScriptProcessor {
             case "wait":
                 if (args.length != 1) {
                     System.out.println("Error on line " + lineNumber + ": wait command requires exactly 1 argument");
-                    return -1;
+                    return -2;
                 }
                 int duration = getValue(args[0].trim());
                 Thread.sleep(duration);
@@ -325,7 +325,7 @@ public class ScriptProcessor {
             case "savecolor":
                 if (args.length != 0) {
                     System.out.println("Error on line " + lineNumber + ": savecolor command requires no arguments");
-                    return -1;
+                    return -2;
                 }
                 Point mousePosition = MouseInfo.getPointerInfo().getLocation();
                 savedColor = robot.getPixelColor(mousePosition.x, mousePosition.y);
@@ -333,33 +333,33 @@ public class ScriptProcessor {
             case "printcolorrgb":
                 if (args.length != 0) {
                     System.out.println("Error on line " + lineNumber + ": printcolor command requires no arguments");
-                    return -1;
+                    return -2;
                 }
                 if (savedColor == null) {
                     System.out.println("Error on line " + lineNumber + ": No color saved, use savecolor command first");
-                    return -1;
+                    return -2;
                 }
                 System.out.print("Saved Color: RGB(" + savedColor.getRed() + ", " + savedColor.getGreen() + ", " + savedColor.getBlue() +")");
                 break;
             case "printcolorhex":
                 if (args.length != 0) {
                     System.out.println("Error on line " + lineNumber + ": printcolor command requires no arguments");
-                    return -1;
+                    return -2;
                 }
                 if (savedColor == null) {
                     System.out.println("Error on line " + lineNumber + ": No color saved, use savecolor command first");
-                    return -1;
+                    return -2;
                 }
                 System.out.print("Hex: #" + Integer.toHexString(savedColor.getRGB()).substring(2).toUpperCase());
                 break;
             case "ifcolor":
                 if (args.length != 2) {
                     System.out.println("Error on line " + lineNumber + ": doifcolor command requires exactly 2 arguments");
-                    return -1;
+                    return -2;
                 }
                 if (savedColor == null) {
                     System.out.println("Error on line " + lineNumber + ": No color saved, use savecolor command first");
-                    return -1;
+                    return -2;
                 }
                 String colorHex = args[0].trim();
                 int threshold = Integer.parseInt(args[1].trim(), 16);
@@ -371,12 +371,12 @@ public class ScriptProcessor {
             case "printvar": {
                 if (args.length != 1) {
                     System.out.println("Error on line " + lineNumber + ": printvar command requires exactly 1 argument");
-                    return -1;
+                    return -2;
                 }
                 String varName = args[0].trim();
                 if (!variables.containsKey(varName)) {
                     System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
-                    return -1;
+                    return -2;
                 }
                 System.out.print(variables.get(varName));
                 break;
@@ -384,18 +384,18 @@ public class ScriptProcessor {
             case "goto":
                 if (args.length != 1) {
                     System.out.println("Error on line " + lineNumber + ": goto command requires exactly 1 argument");
-                    return -1;
+                    return -2;
                 }
                 String label = args[0].trim();
                 if (!labels.containsKey(label)) {
                     System.out.println("Error on line " + lineNumber + ": Undefined label: " + label);
-                    return -1;
+                    return -2;
                 }
                 return labels.get(label); // Jump to the label
             case "set":
                 if (args.length != 2) {
                     System.out.println("Error on line " + lineNumber + ": set command requires exactly 2 arguments");
-                    return -1;
+                    return -2;
                 }
                 String varName = args[0].trim();
                 int value = getValue(args[1].trim());
@@ -404,12 +404,12 @@ public class ScriptProcessor {
             case "add":
                 if (args.length != 2) {
                     System.out.println("Error on line " + lineNumber + ": add command requires exactly 2 arguments");
-                    return -1;
+                    return -2;
                 }
                 varName = args[0].trim();
                 if (!variables.containsKey(varName)) {
                     System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
-                    return -1;
+                    return -2;
                 }
                 value = getValue(args[1].trim());
                 variables.put(varName, variables.get(varName) + value);
@@ -417,12 +417,12 @@ public class ScriptProcessor {
             case "sub":
                 if (args.length != 2) {
                     System.out.println("Error on line " + lineNumber + ": sub command requires exactly 2 arguments");
-                    return -1;
+                    return -2;
                 }
                 varName = args[0].trim();
                 if (!variables.containsKey(varName)) {
                     System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
-                    return -1;
+                    return -2;
                 }
                 value = getValue(args[1].trim());
                 variables.put(varName, variables.get(varName) - value);
@@ -430,12 +430,12 @@ public class ScriptProcessor {
             case "ifequal":
                 if (args.length != 2) {
                     System.out.println("Error on line " + lineNumber + ": ifequal command requires exactly 2 arguments");
-                    return -1;
+                    return -2;
                 }
                 varName = args[0].trim();
                 if (!variables.containsKey(varName)) {
                     System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
-                    return -1;
+                    return -2;
                 }
                 value = getValue(args[1].trim());
                 if (variables.get(varName) != value) {
@@ -445,12 +445,12 @@ public class ScriptProcessor {
             case "ifgreater":
                 if (args.length != 2) {
                     System.out.println("Error on line " + lineNumber + ": ifgreater command requires exactly 2 arguments");
-                    return -1;
+                    return -2;
                 }
                 varName = args[0].trim();
                 if (!variables.containsKey(varName)) {
                     System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
-                    return -1;
+                    return -2;
                 }
                 value = getValue(args[1].trim());
                 if (variables.get(varName) <= value) {
@@ -460,12 +460,12 @@ public class ScriptProcessor {
             case "ifless":
                 if (args.length != 2) {
                     System.out.println("Error on line " + lineNumber + ": ifless command requires exactly 2 arguments");
-                    return -1;
+                    return -2;
                 }
                 varName = args[0].trim();
                 if (!variables.containsKey(varName)) {
                     System.out.println("Error on line " + lineNumber + ": Variable not declared: " + varName);
-                    return -1;
+                    return -2;
                 }
                 value = getValue(args[1].trim());
                 if (variables.get(varName) >= value) {
@@ -474,7 +474,7 @@ public class ScriptProcessor {
                 break;
             default:
                 System.out.println("Error on line " + lineNumber + ": Unknown command: " + command);
-                return -1;
+                return -2;
         }
         return -1; // No jump
     }
