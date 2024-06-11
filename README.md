@@ -1,5 +1,5 @@
 
-# JRobot Automation Tool
+# JBot Automation Tool
 
 JRobot is an automation tool that allows you to script various keyboard and mouse actions, as well as conditional logic and variables. Below are the commands supported by JRobot and their functionalities.
 
