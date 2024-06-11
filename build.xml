@@ -40,5 +40,4 @@
             <arg value="script.txt"/>
         </java>
     </target>
-
 </project>

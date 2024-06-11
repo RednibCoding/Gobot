@@ -8,9 +8,11 @@ See [Commands](#commands) section for a list of commands supported by JBot and t
 JBot depends on the build tool [ant](https://ant.apache.org/)
 
 ## Build
-From the root directory of the project, run: 
+From the root directory of the project: 
+
+Create jar file
 ```
-ant
+ant compile
 ```
 
 ## General Script-Syntax
