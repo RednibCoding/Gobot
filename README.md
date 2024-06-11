@@ -1,7 +1,8 @@
 
 # JBot Automation Tool
 
-JBot is an automation tool that allows you to script various keyboard and mouse actions, as well as conditional logic and variables. Below are the commands supported by JBot and their functionalities.
+JBot is an automation tool that allows you to script various keyboard and mouse actions, as well as conditional logic and variables.
+See [Commands](#commands) section for a list of commands supported by JBot and their functionalities.
 
 ## Dependencies
 JBot depends on the build tool [ant](https://ant.apache.org/)
@@ -13,7 +14,7 @@ ant
 ```
 
 ## General Script-Syntax
-
+- A script is composed of a list of [commands](#commands). See [Examples](#examples)
 - Commands that have arguments should be followed by a colon, and the arguments should be separated by commas.
 - A label should be defined by a leading `#` and can be referred to in a `goto` command.
 - Only one command or label can be on a line.
@@ -139,7 +140,7 @@ printnl
 - **Description**: Prints the value of the specified variable.
 - **Example**: `printvar: a`
 
-## Example Scripts
+## Examples
 
 ### Example 1: Simple Print
 ```
