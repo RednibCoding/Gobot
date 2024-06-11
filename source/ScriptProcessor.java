@@ -156,6 +156,8 @@ public class ScriptProcessor {
                 int newLine = executeCommand(lines, command, args, i + 1);
                 if (newLine >= 0) {
                     i = newLine - 1; // -1 because the for loop will increment i
+                } else {
+                    System.exit(0);
                 }
             }
         } catch (Exception e) {
@@ -471,7 +473,7 @@ public class ScriptProcessor {
                 }
                 break;
             default:
-                System.out.println("Unknown command: " + command);
+                System.out.println("Error on line " + lineNumber + ": Unknown command: " + command);
                 return -1;
         }
         return -1; // No jump
