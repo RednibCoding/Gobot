@@ -274,9 +274,9 @@ public class ScriptProcessor {
                 int duration = getValue(args[0].trim());
                 Thread.sleep(duration);
                 break;
-            case "getcolor":
+            case "savecolor":
                 if (args.length != 0) {
-                    System.out.println("Error on line " + lineNumber + ": getcolor command requires no arguments");
+                    System.out.println("Error on line " + lineNumber + ": savecolor command requires no arguments");
                     return -1;
                 }
                 Point mousePosition = MouseInfo.getPointerInfo().getLocation();
@@ -288,7 +288,7 @@ public class ScriptProcessor {
                     return -1;
                 }
                 if (savedColor == null) {
-                    System.out.println("Error on line " + lineNumber + ": No color saved, use getcolor command first");
+                    System.out.println("Error on line " + lineNumber + ": No color saved, use savecolor command first");
                     return -1;
                 }
                 System.out.print("Saved Color: RGB(" + savedColor.getRed() + ", " + savedColor.getGreen() + ", " + savedColor.getBlue() +")");
@@ -299,7 +299,7 @@ public class ScriptProcessor {
                     return -1;
                 }
                 if (savedColor == null) {
-                    System.out.println("Error on line " + lineNumber + ": No color saved, use getcolor command first");
+                    System.out.println("Error on line " + lineNumber + ": No color saved, use savecolor command first");
                     return -1;
                 }
                 System.out.print("Hex: #" + Integer.toHexString(savedColor.getRGB()).substring(2).toUpperCase());
@@ -310,7 +310,7 @@ public class ScriptProcessor {
                     return -1;
                 }
                 if (savedColor == null) {
-                    System.out.println("Error on line " + lineNumber + ": No color saved, use getcolor command first");
+                    System.out.println("Error on line " + lineNumber + ": No color saved, use savecolor command first");
                     return -1;
                 }
                 String colorHex = args[0].trim();

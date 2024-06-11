@@ -14,7 +14,7 @@ ant
 ```
 
 ## General Script-Syntax
-- A script is composed of a list of [commands](#commands). See [Examples](#examples)
+- A script is composed of a list of [commands](#commands). See [Examples](#examples).
 - Commands that have arguments should be followed by a colon, and the arguments should be separated by commas.
 - Commands that have no arguments may not be followed by a colon.
 - A label should be defined by a leading `#` and can be referred to in a `goto` command.
@@ -81,10 +81,10 @@ printnl
 - **Description**: Waits for the specified duration.
 - **Example**: `wait: 1000`
 
-### getcolor
-- **Syntax**: `getcolor`
-- **Description**: Gets the color of the pixel at the current mouse position.
-- **Example**: `getcolor`
+### savecolor
+- **Syntax**: `savecolor`
+- **Description**: Saves the color of the pixel at the current mouse position.
+- **Example**: `savecolor`
 
 ### printcolorrgb
 - **Syntax**: `printcolorrgb`
@@ -162,7 +162,7 @@ release: lmouse
 ### Example 3: Color Checking
 ```
 move: 150, 150
-getcolor
+savecolor
 printcolorhex
 ifcolor: ffffff, 0a
     print: The color is white.
