@@ -194,7 +194,7 @@ public class ScriptProcessor {
                     System.out.println("Error on line " + lineNumber + ": autopress command requires at least 1 argument");
                     return -1;
                 }
-                Thread.sleep(40);
+                Thread.sleep(80);
                 for (String arg : args) {
                     int key = keyMap.getOrDefault(arg.trim().toLowerCase(), -1);
                     if (key != -1) {
@@ -208,9 +208,9 @@ public class ScriptProcessor {
                         System.out.println("Error on line " + lineNumber + ": Invalid key: " + arg.trim());
                         return -1;
                     }
-                    Thread.sleep(40);
+                    Thread.sleep(80);
                 }
-                Thread.sleep(40);
+                Thread.sleep(80);
                 for (String arg : args) {
                     int key = keyMap.getOrDefault(arg.trim().toLowerCase(), -1);
                     if (key != -1) {
@@ -224,9 +224,9 @@ public class ScriptProcessor {
                         System.out.println("Error on line " + lineNumber + ": Invalid key: " + arg.trim());
                         return -1;
                     }
-                    Thread.sleep(40);
+                    Thread.sleep(80);
                 }
-                Thread.sleep(40);
+                Thread.sleep(80);
                 break;
             case "press":
                 if (args.length < 1) {
