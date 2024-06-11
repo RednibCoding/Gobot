@@ -250,7 +250,7 @@ public class ScriptProcessor {
                 break;
             }
             
-            case "ifreleased": {
+            case "ifnotpressed": {
                 if (args.length != 1) {
                     System.out.println("Error on line " + lineNumber + ": ifpressed command requires exactly 1 argument");
                     return -1;

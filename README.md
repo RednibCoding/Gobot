@@ -69,10 +69,10 @@ printnl
 - **Description**: Executes the next command if the specified key is pressed.
 - **Example**: `ifpressed: lshift`
 
-### ifreleased
-- **Syntax**: `ifreleased: <key>`
-- **Description**: Executes the next command if the specified key is released.
-- **Example**: `ifreleased: lshift`
+### ifnotpressed
+- **Syntax**: `ifnotpressed: <key>`
+- **Description**: Executes the next command if the specified key is not pressed.
+- **Example**: `ifnotpressed: lshift`
 
 ### wait
 - **Syntax**: `wait: <milliseconds>`
@@ -192,8 +192,8 @@ ifpressed: lshift
     print: lshift is pressed.
 printnl
 release: lshift
-ifreleased: lshift
-    print: lshift is released.
+ifnotpressed: lshift
+    print: lshift is not pressed.
 printnl
 ```
 
@@ -209,6 +209,66 @@ printnl
 print: End of the script.
 printnl
 ```
+
+## Supported Keys
+
+- **lshift**: Left Shift key
+- **rshift**: Right Shift key
+- **lctrl**: Left Control key
+- **rctrl**: Right Control key
+- **lalt**: Left Alt key
+- **ralt**: Right Alt key
+- **space**: Spacebar
+- **enter**: Enter key
+- **backspace**: Backspace key
+- **tab**: Tab key
+- **esc**: Escape key
+- **delete**: Delete key
+- **insert**: Insert key
+- **home**: Home key
+- **end**: End key
+- **pageup**: Page Up key
+- **pagedown**: Page Down key
+- **up**: Up Arrow key
+- **down**: Down Arrow key
+- **left**: Left Arrow key
+- **right**: Right Arrow key
+- **f1** to **f12**: Function keys F1 to F12
+- **numlock**: Num Lock key
+- **capslock**: Caps Lock key
+- **scrolllock**: Scroll Lock key
+- **pause**: Pause key
+- **printscreen**: Print Screen key
+- **windows**: Windows key
+- **lmouse**: Left Mouse Button
+- **rmouse**: Right Mouse Button
+
+### Alphabet Keys
+- **a** to **z**: Alphabet keys A to Z
+
+### Number Keys
+- **0** to **9**: Number keys 0 to 9
+
+### Numpad Keys
+- **numpad0** to **numpad9**: Numpad keys 0 to 9
+- **numpadadd**: Numpad Add key
+- **numpadsub**: Numpad Subtract key
+- **numpadmul**: Numpad Multiply key
+- **numpaddiv**: Numpad Divide key
+- **numpaddecimal**: Numpad Decimal key
+- **numpadenter**: Numpad Enter key
+
+### Symbols
+- **semicolon**: Semicolon (;)
+- **equals**: Equals (=)
+- **comma**: Comma (,)
+- **minus**: Minus (-)
+- **period**: Period (.)
+- **slash**: Slash (/)
+- **backslash**: Backslash (\\)
+- **openbracket**: Open Bracket ([)
+- **closebracket**: Close Bracket (])
+- **quote**: Quote (')
 
 ## License
 JBot is open-source software licensed under the MIT license.
