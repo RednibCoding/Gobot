@@ -7,13 +7,13 @@ import (
 )
 
 func main() {
-	// args := os.Args
-	// if len(args) != 2 {
-	// 	fmt.Println("Usage: gobot <script-file>")
-	// 	os.Exit(0)
-	// }
-	// scriptpath := os.Args[1]
-	scriptpath := "test.gb"
+	args := os.Args
+	if len(args) != 2 {
+		fmt.Println("Usage: gobot <script-file>")
+		os.Exit(0)
+	}
+	scriptpath := os.Args[1]
+	// scriptpath := "test.gb"
 
 	if _, err := os.Stat(scriptpath); os.IsNotExist(err) {
 		fmt.Printf("%s not found\n", scriptpath)
