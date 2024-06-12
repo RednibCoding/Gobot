@@ -131,11 +131,31 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 
 	case "move":
 		if len(args) != 2 {
-			err := fmt.Errorf("error on line %d: move command requires exactly 2 arguments", lineNumber)
-			return 0, err
+			return 0, fmt.Errorf("error on line %d: move command requires exactly 2 arguments", lineNumber)
 		}
-		x, _ := strconv.Atoi(strings.TrimSpace(args[0]))
-		y, _ := strconv.Atoi(strings.TrimSpace(args[1]))
+
+		// Function to resolve an argument to its integer value
+		resolveInt := func(arg string) (int, error) {
+			arg = strings.TrimSpace(arg)
+			if variable, exists := sp.variables[arg]; exists {
+				if variable.Type != Int {
+					return 0, fmt.Errorf("error on line %d: variable %s is not an integer", lineNumber, arg)
+				}
+				return strconv.Atoi(variable.Value)
+			}
+			return strconv.Atoi(arg)
+		}
+
+		x, errX := resolveInt(args[0])
+		if errX != nil {
+			return 0, fmt.Errorf("error on line %d: invalid integer value for x-coordinate: %s", lineNumber, args[0])
+		}
+
+		y, errY := resolveInt(args[1])
+		if errY != nil {
+			return 0, fmt.Errorf("error on line %d: invalid integer value for y-coordinate: %s", lineNumber, args[1])
+		}
+
 		robotgo.Move(x, y)
 
 	case "autopress":
