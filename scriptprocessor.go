@@ -315,6 +315,14 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			return 0, err
 		}
 
+	case "goclr":
+		if len(args) != 0 {
+			err := fmt.Errorf("error on line %d: goclr command requires no arguments", lineNumber)
+			return 0, err
+		}
+		// clear the return stack
+		sp.returnStack = sp.returnStack[:0]
+
 	case "return":
 		if len(args) != 0 {
 			err := fmt.Errorf("error on line %d: return command requires no arguments", lineNumber)

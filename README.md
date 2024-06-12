@@ -158,6 +158,11 @@ In Gobot, variables can store different types of values including integers, floa
 - **Description**: Returns to the address saved by the last `gosub` command.
 - **Example**: `return`
 
+### goclr
+- **Syntax**: `goclr`
+- **Description**: Clears the return stack, effectively removing all saved return addresses. This is useful when a subroutine should break out of the return path. Otherwise this could lead to a stack overflow error
+- **Example**: `goclr`
+
 ### set
 - **Syntax**: `set: <variable>, <value>`
 - **Description**: Sets the specified variable to the given value.
