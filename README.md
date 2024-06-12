@@ -212,7 +212,7 @@ println: "This will be skipped."
 println: "End of the script."
 ```
 
-### Example 6: Subroutine with Gosub and Return
+### Example 7: Subroutine with Gosub and Return
 ```
 println: "--- Start of the script ---"
 
@@ -244,7 +244,7 @@ println: "This will be skipped."
 ; --- End of the script. ---
 ```
 
-### Example 7: Anonymous Labels
+### Example 8: Anonymous Labels
 ```
 println: "--- Start of the script. ---"
 goto: @f
