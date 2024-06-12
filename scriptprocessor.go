@@ -17,6 +17,7 @@ type ScriptProcessor struct {
 	executeNextLine bool
 	variables       map[string]int
 	labels          map[string]int
+	returnStack     []int
 }
 
 func NewScriptProcessor() *ScriptProcessor {
@@ -26,6 +27,7 @@ func NewScriptProcessor() *ScriptProcessor {
 		variables:       make(map[string]int),
 		labels:          make(map[string]int),
 		executeNextLine: true,
+		returnStack:     []int{},
 	}
 	sp.keyMap = initializeKeyMap()
 	return sp
@@ -223,6 +225,33 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			err := fmt.Errorf("error on line %d: Undefined label: %s", lineNumber, label)
 			return 0, err
 		}
+
+	case "gosub":
+		if len(args) != 1 {
+			err := fmt.Errorf("error on line %d: gosub command requires exactly 1 argument", lineNumber)
+			return 0, err
+		}
+		label := strings.TrimSpace(args[0])
+		if line, ok := sp.labels[label]; ok {
+			sp.returnStack = append(sp.returnStack, lineNumber) // Save the return address
+			return line, nil                                    // Jump to the label
+		} else {
+			err := fmt.Errorf("error on line %d: Undefined label: %s", lineNumber, label)
+			return 0, err
+		}
+
+	case "return":
+		if len(args) != 0 {
+			err := fmt.Errorf("error on line %d: return command requires no arguments", lineNumber)
+			return 0, err
+		}
+		if len(sp.returnStack) == 0 {
+			err := fmt.Errorf("error on line %d: return command called with an empty return stack", lineNumber)
+			return 0, err
+		}
+		returnAddress := sp.returnStack[len(sp.returnStack)-1]
+		sp.returnStack = sp.returnStack[:len(sp.returnStack)-1] // Pop the return address
+		return returnAddress, nil
 	case "set":
 		if len(args) != 2 {
 			err := fmt.Errorf("error on line %d: set command requires exactly 2 arguments", lineNumber)

@@ -109,6 +109,16 @@ println: End of the script.
 - **Description**: Jumps to the specified label.
 - **Example**: `goto: start`
 
+### gosub
+- **Syntax**: `gosub: <label>`
+- **Description**: Jumps to the specified label and saves the return address.
+- **Example**: `gosub: subroutine`
+
+### return
+- **Syntax**: `return`
+- **Description**: Returns to the address saved by the last `gosub` command.
+- **Example**: `return`
+
 ### set
 - **Syntax**: `set: <variable>, <value>`
 - **Description**: Sets the specified variable to the given value.
@@ -182,7 +192,7 @@ ifless: a, 15
 ```
 press: lshift
 ifpressed: lshift
-    print: "lshift is pressed."
+    println: "lshift is pressed."
 
 release: lshift
 
@@ -190,7 +200,7 @@ ifnotpressed: lshift
     println: "lshift is not pressed."
 ```
 
-### Labels and Goto
+### Example 6: Labels and Goto
 ```
 #start
 println: "Start of the script."
@@ -198,6 +208,38 @@ goto: end
 println: "This will be skipped."
 #end
 println: "End of the script."
+```
+
+### Example 6: Subroutine with Gosub and Return
+```
+println: "--- Start of the script ---"
+
+gosub: subroutine1
+println: "Back from subroutine 1"
+goto: end
+
+println: "This will be skipped."
+
+#subroutine1
+    println: "In subroutine 1"
+    gosub: subroutine2
+    println: "Back from subroutine 2"
+    return
+
+#subroutine2
+    println: "In subroutine 2"
+    return
+
+#end
+    println: "--- End of the script. ---"
+
+; output:
+; --- Start of the script ---
+; In subroutine 1
+; In subroutine 2
+; Back from subroutine 2
+; Back from subroutine 1
+; --- End of the script. ---
 ```
 
 ## Supported Keys
