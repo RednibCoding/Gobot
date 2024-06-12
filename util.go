@@ -30,6 +30,27 @@ func abs(x int) int {
 	return x
 }
 
+func splitArgs(argsStr string) []string {
+	args := []string{}
+	current := strings.Builder{}
+	inQuotes := false
+
+	for _, r := range argsStr {
+		switch {
+		case r == '"' && (len(current.String()) == 0 || current.String()[len(current.String())-1] != '\\'):
+			inQuotes = !inQuotes
+			current.WriteRune(r)
+		case r == ',' && !inQuotes:
+			args = append(args, strings.TrimSpace(current.String()))
+			current.Reset()
+		default:
+			current.WriteRune(r)
+		}
+	}
+	args = append(args, strings.TrimSpace(current.String()))
+	return args
+}
+
 func initializeKeyMap() map[string]string {
 	keyMap := make(map[string]string)
 

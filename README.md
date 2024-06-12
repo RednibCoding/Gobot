@@ -43,6 +43,47 @@ println: "This will be skipped."
 println: "End of the script."
 ```
 
+## Variables and Variable Types
+
+In Gobot, variables can store different types of values including integers, floats, and strings. Variables are dynamically typed based on the value assigned to them using the `set` command.
+
+### Variable Types
+
+- **String (Str)**: A sequence of characters enclosed in double quotes.
+  - **Example**: `set: myString, "Hello, Gobot!"`
+
+- **Integer (Int)**: A whole number without a decimal point.
+  - **Example**: `set: myInt, 10`
+
+- **Float (Flt)**: A number with a decimal point.
+  - **Example**: `set: myFloat, 3.14`
+
+### Working with Variables
+
+- **Set a Variable**: The `set` command is used to create a variable and assign a value to it.
+  - **Syntax**: `set: <variable>, <value>`
+  - **Example**: `set: myVar, "Hello, World!"`
+
+- **Use Variables in Commands**: Variables can be used in various commands to retrieve their values.
+  - **Example**: `println: myVar` will print the value of `myVar`.
+
+### Commands for Variable Operations
+
+- **add**: Adds the specified value to the variable. Supports string concatenation when the first argument is a string.
+  - **Syntax**: `add: <variable>, <value>`
+  - **Example**: 
+    - `add: myInt, 5` (integer addition)
+    - `add: myFloat, 2.86` (float addition)
+    - `add: myString, " World!"` (string concatenation)
+    - `add: myString, myInt` (concatenation)
+    - `add: myString, 3.14` (concatenation)
+
+- **sub**: Subtracts the specified value from the variable. Only applicable for integers and floats.
+  - **Syntax**: `sub: <variable>, <value>`
+  - **Example**: 
+    - `sub: myInt, 3`
+    - `sub: myFloat, 1.14`
+
 ## Commands
 
 ### print
@@ -90,25 +131,15 @@ println: "End of the script."
 - **Description**: Waits for the specified duration.
 - **Example**: `wait: 1000`
 
-### savecolor
-- **Syntax**: `savecolor: <x>, <y>`
-- **Description**: Saves the color of the pixel at the given x and y position.
-- **Example**: `savecolor: 200, 300`
+### getcolor
+- **Syntax**: `getcolor: <variable>, <x>, <y>`
+- **Description**: Retrieves the color at the specified screen coordinates and stores it in the given variable. If the variable does not exist, it is created as a string variable; if it exists, it must be of type string.
+- **Example**: `getcolor: mySavedColor, 100, 150`
 
-### printcolorrgb
-- **Syntax**: `printcolorrgb`
-- **Description**: Prints the saved color in RGB format.
-- **Example**: `printcolorrgb`
-
-### printcolorhex
-- **Syntax**: `printcolorhex`
-- **Description**: Prints the saved color in hexadecimal format.
-- **Example**: `printcolorhex`
-
-### ifcolor
-- **Syntax**: `ifcolor: <hexcolor>, <threshold>`
-- **Description**: Executes the next command if the saved color matches the specified color within the given threshold.
-- **Example**: `ifcolor: ffffff, 0a`
+### colorsmatch
+- **Syntax**: `colorsmatch: <color1>, <color2>, <threshold>`
+- **Description**: Compares two colors to see if they match within the specified threshold. Colors must be hex values preceded by `#` and can be given as string variables or string literals.
+- **Example**: `colorsmatch: myColor, "#deadbeef", "#10"`
 
 ### goto
 - **Syntax**: `goto: <label>`
@@ -174,10 +205,11 @@ release: lmouse
 
 ### Example 3: Color Checking
 ```
-savecolor: 200, 300
-printcolorhex
-ifcolor: ffffff, 0a
-    println: "The color is white."
+; the myColor variable will be created automatically
+getcolor: myColor, 175, 40
+println: myColor
+colorsmatch: myColor, "#fed668", #01
+    println: "colors match :)"
 ```
 
 ### Example 4: Using and Printing Variables
@@ -196,7 +228,30 @@ ifless: a, 15
     println: "Variable a is less than 15"
 ```
 
-### Example 5: Conditional Execution with Keys
+#### Example 5: Arithmetic Operations
+```
+set: myInt, 10
+set: myFloat, 3.14
+add: myInt, 5
+add: myFloat, 2.86
+println: "New myInt: ", myInt
+println: "New myFloat: ", myFloat
+sub: myInt, 3
+sub: myFloat, 1.14
+println: "New myInt after subtraction: ", myInt
+println: "New myFloat after subtraction: ", myFloat
+```
+
+#### Example 6: String Concatenation
+set: myString, "Hello"
+add: myString, ", Gobot!"
+println: myString
+add: myString, 10
+set: myFloat, 3.14
+add: myString, myFloat
+println: myString
+
+### Example 7: Conditional Execution with Keys
 ```
 press: lshift
 ifpressed: lshift
@@ -208,7 +263,7 @@ ifnotpressed: lshift
     println: "lshift is not pressed."
 ```
 
-### Example 6: Labels and Goto
+### Example 8: Labels and Goto
 ```
 #start
 println: "Start of the script."
@@ -218,7 +273,7 @@ println: "This will be skipped."
 println: "End of the script."
 ```
 
-### Example 7: Subroutine with Gosub and Return
+### Example 9: Subroutine with Gosub and Return
 ```
 println: "--- Start of the script ---"
 
@@ -250,7 +305,7 @@ println: "This will be skipped."
 ; --- End of the script. ---
 ```
 
-### Example 8: Anonymous Labels
+### Example 10: Anonymous Labels
 ```
 println: "--- Start of the script. ---"
 goto: @f

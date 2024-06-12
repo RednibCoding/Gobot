@@ -10,12 +10,24 @@ import (
 	"github.com/go-vgo/robotgo"
 )
 
+type VarType int
+
+const (
+	Str VarType = iota
+	Int
+	Flt
+)
+
+type Variable struct {
+	Type  VarType
+	Value string
+}
+
 type ScriptProcessor struct {
 	keyMap          map[string]string
 	pressedKeys     map[string]bool
-	savedColor      string
 	executeNextLine bool
-	variables       map[string]int
+	variables       map[string]Variable
 	labels          map[string]int
 	anonymousLabels []int
 	returnStack     []int
@@ -25,7 +37,7 @@ func NewScriptProcessor() *ScriptProcessor {
 	sp := &ScriptProcessor{
 		keyMap:          make(map[string]string),
 		pressedKeys:     make(map[string]bool),
-		variables:       make(map[string]int),
+		variables:       make(map[string]Variable),
 		labels:          make(map[string]int),
 		executeNextLine: true,
 		anonymousLabels: []int{},
@@ -64,7 +76,7 @@ func (sp *ScriptProcessor) executeScript(lines []string) {
 		command := parts[0]
 		args := []string{}
 		if len(parts) > 1 {
-			args = strings.Split(parts[1], ",")
+			args = splitArgs(parts[1])
 		}
 
 		lineNumber := i + 1
@@ -82,27 +94,27 @@ func (sp *ScriptProcessor) executeScript(lines []string) {
 func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNumber int) (int, error) {
 	switch command {
 
-	case "println":
-		if len(args) < 1 {
-			err := fmt.Errorf("error on line %d: println command requires at least 1 argument", lineNumber)
-			return 0, err
+	case "print", "println":
+		output := ""
+		for _, arg := range args {
+			arg = strings.TrimSpace(arg)
+			if strings.HasPrefix(arg, "\"") && strings.HasSuffix(arg, "\"") {
+				// It's a string literal, so strip the quotes
+				output += arg[1 : len(arg)-1]
+			} else if variable, exists := sp.variables[arg]; exists {
+				// It's a variable, so use its value
+				output += variable.Value
+			} else {
+				// It's a number literal value, so use it as is
+				output += arg
+			}
 		}
-		output, err := sp.concatenateStringArguments(args, lineNumber)
-		if err != nil {
-			return 0, err
+		if command == "println" {
+			fmt.Println(output)
+		} else {
+			fmt.Print(output)
 		}
-		fmt.Println(output)
-
-	case "print":
-		if len(args) < 1 {
-			err := fmt.Errorf("error on line %d: print command requires at least 1 argument", lineNumber)
-			return 0, err
-		}
-		output, err := sp.concatenateStringArguments(args, lineNumber)
-		if err != nil {
-			return 0, err
-		}
-		fmt.Print(output)
+		return -1, nil
 
 	case "move":
 		if len(args) != 2 {
@@ -301,8 +313,26 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			return 0, err
 		}
 		varName := strings.TrimSpace(args[0])
-		value, _ := strconv.Atoi(strings.TrimSpace(args[1]))
-		sp.variables[varName] = value
+		varValue := strings.TrimSpace(args[1])
+
+		// Determine the type of the variable
+		if strings.HasPrefix(varValue, "\"") && strings.HasSuffix(varValue, "\"") {
+			// String type
+			sp.variables[varName] = Variable{Type: Str, Value: varValue[1 : len(varValue)-1]}
+		} else if strings.Contains(varValue, ".") {
+			// Float type
+			if _, err := strconv.ParseFloat(varValue, 64); err != nil {
+				return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
+			}
+			sp.variables[varName] = Variable{Type: Flt, Value: varValue}
+		} else {
+			// Integer type
+			if _, err := strconv.Atoi(varValue); err != nil {
+				return 0, fmt.Errorf("error on line %d: invalid integer value", lineNumber)
+			}
+			sp.variables[varName] = Variable{Type: Int, Value: varValue}
+		}
+		return -1, nil
 
 	case "add":
 		if len(args) != 2 {
@@ -310,145 +340,315 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			return 0, err
 		}
 		varName := strings.TrimSpace(args[0])
-		if value, ok := sp.variables[varName]; ok {
-			addValue, _ := strconv.Atoi(strings.TrimSpace(args[1]))
-			sp.variables[varName] = value + addValue
-		} else {
-			err := fmt.Errorf("error on line %d: Variable not declared: %s", lineNumber, varName)
+		varValue := strings.TrimSpace(args[1])
+
+		variable, exists := sp.variables[varName]
+		if !exists {
+			err := fmt.Errorf("error on line %d: variable %s not defined", lineNumber, varName)
 			return 0, err
 		}
+
+		otherVariable, exists := sp.variables[varValue]
+		if !exists {
+			otherVariable = Variable{Type: Int, Value: varValue}
+			if strings.HasPrefix(varValue, "\"") && strings.HasSuffix(varValue, "\"") {
+				otherVariable.Type = Str
+				otherVariable.Value = varValue[1 : len(varValue)-1]
+			} else if strings.Contains(varValue, ".") {
+				otherVariable.Type = Flt
+				if _, err := strconv.ParseFloat(varValue, 64); err != nil {
+					return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
+				}
+			} else {
+				if _, err := strconv.Atoi(varValue); err != nil {
+					return 0, fmt.Errorf("error on line %d: invalid integer value", lineNumber)
+				}
+			}
+		}
+
+		switch variable.Type {
+		case Int:
+			intValue, err := strconv.Atoi(variable.Value)
+			if err != nil {
+				return 0, fmt.Errorf("error on line %d: invalid integer value", lineNumber)
+			}
+			if otherVariable.Type == Int {
+				argValue, err := strconv.Atoi(otherVariable.Value)
+				if err != nil {
+					return 0, fmt.Errorf("error on line %d: invalid integer value", lineNumber)
+				}
+				intValue += argValue
+			} else if otherVariable.Type == Flt {
+				argValue, err := strconv.ParseFloat(otherVariable.Value, 64)
+				if err != nil {
+					return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
+				}
+				intValue += int(argValue)
+			} else {
+				return 0, fmt.Errorf("error on line %d: cannot add string to integer", lineNumber)
+			}
+			sp.variables[varName] = Variable{Type: Int, Value: strconv.Itoa(intValue)}
+
+		case Flt:
+			floatValue, err := strconv.ParseFloat(variable.Value, 64)
+			if err != nil {
+				return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
+			}
+			if otherVariable.Type == Int {
+				argValue, err := strconv.Atoi(otherVariable.Value)
+				if err != nil {
+					return 0, fmt.Errorf("error on line %d: invalid integer value", lineNumber)
+				}
+				floatValue += float64(argValue)
+			} else if otherVariable.Type == Flt {
+				argValue, err := strconv.ParseFloat(otherVariable.Value, 64)
+				if err != nil {
+					return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
+				}
+				floatValue += argValue
+			} else {
+				return 0, fmt.Errorf("error on line %d: cannot add string to float", lineNumber)
+			}
+			sp.variables[varName] = Variable{Type: Flt, Value: fmt.Sprintf("%f", floatValue)}
+
+		case Str:
+			if otherVariable.Type == Str || otherVariable.Type == Int {
+				varValue := variable.Value + otherVariable.Value
+				sp.variables[varName] = Variable{Type: Str, Value: varValue}
+			} else {
+				return 0, fmt.Errorf("error on line %d: cannot add float to string", lineNumber)
+			}
+
+		default:
+			return 0, fmt.Errorf("error on line %d: unsupported variable type for add command", lineNumber)
+		}
+		return -1, nil
 
 	case "sub":
 		if len(args) != 2 {
-			err := fmt.Errorf("error on line %d: sub command requires exactly 2 arguments", lineNumber)
+			err := fmt.Errorf("error on line %d: %s command requires exactly 2 arguments", lineNumber, command)
 			return 0, err
 		}
 		varName := strings.TrimSpace(args[0])
-		if value, ok := sp.variables[varName]; ok {
-			subValue, _ := strconv.Atoi(strings.TrimSpace(args[1]))
-			sp.variables[varName] = value - subValue
-		} else {
-			err := fmt.Errorf("error on line %d: Variable not declared: %s", lineNumber, varName)
+		varValue := strings.TrimSpace(args[1])
+
+		variable, exists := sp.variables[varName]
+		if !exists {
+			err := fmt.Errorf("error on line %d: variable %s not defined", lineNumber, varName)
 			return 0, err
 		}
 
-	case "ifequal":
+		otherVariable, exists := sp.variables[varValue]
+		if !exists {
+			otherVariable = Variable{Type: Int, Value: varValue}
+			if strings.Contains(varValue, ".") {
+				otherVariable.Type = Flt
+				if _, err := strconv.ParseFloat(varValue, 64); err != nil {
+					return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
+				}
+			} else {
+				if _, err := strconv.Atoi(varValue); err != nil {
+					return 0, fmt.Errorf("error on line %d: invalid integer value", lineNumber)
+				}
+			}
+		}
+
+		switch variable.Type {
+		case Int:
+			intValue, err := strconv.Atoi(variable.Value)
+			if err != nil {
+				return 0, fmt.Errorf("error on line %d: invalid integer value", lineNumber)
+			}
+			if otherVariable.Type == Int {
+				argValue, err := strconv.Atoi(otherVariable.Value)
+				if err != nil {
+					return 0, fmt.Errorf("error on line %d: invalid integer value", lineNumber)
+				}
+				if command == "add" {
+					intValue += argValue
+				} else {
+					intValue -= argValue
+				}
+			} else {
+				argValue, err := strconv.ParseFloat(otherVariable.Value, 64)
+				if err != nil {
+					return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
+				}
+				if command == "add" {
+					intValue += int(argValue)
+				} else {
+					intValue -= int(argValue)
+				}
+			}
+			sp.variables[varName] = Variable{Type: Int, Value: strconv.Itoa(intValue)}
+
+		case Flt:
+			floatValue, err := strconv.ParseFloat(variable.Value, 64)
+			if err != nil {
+				return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
+			}
+			if otherVariable.Type == Int {
+				argValue, err := strconv.Atoi(otherVariable.Value)
+				if err != nil {
+					return 0, fmt.Errorf("error on line %d: invalid integer value", lineNumber)
+				}
+				if command == "add" {
+					floatValue += float64(argValue)
+				} else {
+					floatValue -= float64(argValue)
+				}
+			} else {
+				argValue, err := strconv.ParseFloat(otherVariable.Value, 64)
+				if err != nil {
+					return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
+				}
+				if command == "add" {
+					floatValue += argValue
+				} else {
+					floatValue -= argValue
+				}
+			}
+			sp.variables[varName] = Variable{Type: Flt, Value: fmt.Sprintf("%f", floatValue)}
+
+		default:
+			return 0, fmt.Errorf("error on line %d: unsupported variable type for %s command", lineNumber, command)
+		}
+		return -1, nil
+
+	case "ifequal", "ifgreater", "ifless":
 		if len(args) != 2 {
-			err := fmt.Errorf("error on line %d: ifequal command requires exactly 2 arguments", lineNumber)
+			err := fmt.Errorf("error on line %d: %s command requires exactly 2 arguments", lineNumber, command)
 			return 0, err
 		}
 		varName := strings.TrimSpace(args[0])
-		if value, ok := sp.variables[varName]; ok {
-			compareValue, _ := strconv.Atoi(strings.TrimSpace(args[1]))
-			if value != compareValue {
+		varValue := strings.TrimSpace(args[1])
+
+		variable, exists := sp.variables[varName]
+		if !exists {
+			err := fmt.Errorf("error on line %d: variable %s not defined", lineNumber, varName)
+			return 0, err
+		}
+
+		switch variable.Type {
+		case Int:
+			intValue, err := strconv.Atoi(variable.Value)
+			if err != nil {
+				return 0, fmt.Errorf("error on line %d: invalid integer value", lineNumber)
+			}
+			argValue, err := strconv.Atoi(varValue)
+			if err != nil {
+				return 0, fmt.Errorf("error on line %d: invalid integer value", lineNumber)
+			}
+			if (command == "ifequal" && intValue == argValue) ||
+				(command == "ifgreater" && intValue > argValue) ||
+				(command == "ifless" && intValue < argValue) {
+				sp.executeNextLine = true
+			} else {
 				sp.executeNextLine = false
 			}
-		} else {
-			err := fmt.Errorf("error on line %d: Variable not declared: %s", lineNumber, varName)
-			return 0, err
-		}
 
-	case "ifgreater":
-		if len(args) != 2 {
-			err := fmt.Errorf("error on line %d: ifgreater command requires exactly 2 arguments", lineNumber)
-			return 0, err
-		}
-		varName := strings.TrimSpace(args[0])
-		if value, ok := sp.variables[varName]; ok {
-			compareValue, _ := strconv.Atoi(strings.TrimSpace(args[1]))
-			if value <= compareValue {
+		case Flt:
+			floatValue, err := strconv.ParseFloat(variable.Value, 64)
+			if err != nil {
+				return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
+			}
+			argValue, err := strconv.ParseFloat(varValue, 64)
+			if err != nil {
+				return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
+			}
+			if (command == "ifequal" && floatValue == argValue) ||
+				(command == "ifgreater" && floatValue > argValue) ||
+				(command == "ifless" && floatValue < argValue) {
+				sp.executeNextLine = true
+			} else {
 				sp.executeNextLine = false
 			}
-		} else {
-			err := fmt.Errorf("error on line %d: Variable not declared: %s", lineNumber, varName)
-			return 0, err
-		}
 
-	case "ifless":
-		if len(args) != 2 {
-			err := fmt.Errorf("error on line %d: ifless command requires exactly 2 arguments", lineNumber)
-			return 0, err
-		}
-		varName := strings.TrimSpace(args[0])
-		if value, ok := sp.variables[varName]; ok {
-			compareValue, _ := strconv.Atoi(strings.TrimSpace(args[1]))
-			if value >= compareValue {
+		case Str:
+			if command == "ifequal" && variable.Value == varValue {
+				sp.executeNextLine = true
+			} else {
 				sp.executeNextLine = false
 			}
-		} else {
-			err := fmt.Errorf("error on line %d: Variable not declared: %s", lineNumber, varName)
-			return 0, err
-		}
 
-	case "savecolor":
-		if len(args) != 2 {
-			err := fmt.Errorf("error on line %d: savecolor command requires exactly 2 arguments", lineNumber)
-			return 0, err
+		default:
+			return 0, fmt.Errorf("error on line %d: unsupported variable type for %s command", lineNumber, command)
 		}
-		x, errX := strconv.Atoi(strings.TrimSpace(args[0]))
-		y, errY := strconv.Atoi(strings.TrimSpace(args[1]))
+		return -1, nil
+
+	case "getcolor":
+		if len(args) != 3 {
+			return 0, fmt.Errorf("error on line %d: getcolor command requires exactly 3 arguments", lineNumber)
+		}
+		varName := strings.TrimSpace(args[0])
+		xStr := strings.TrimSpace(args[1])
+		yStr := strings.TrimSpace(args[2])
+
+		x, errX := strconv.Atoi(xStr)
+		y, errY := strconv.Atoi(yStr)
 		if errX != nil || errY != nil {
-			err := fmt.Errorf("error on line %d: invalid arguments for savecolor command", lineNumber)
-			return 0, err
-		}
-		sp.savedColor = robotgo.GetPixelColor(x, y)
-
-	case "printcolorrgb":
-		if len(args) != 0 {
-			err := fmt.Errorf("error on line %d: printcolorrgb command requires no arguments", lineNumber)
-			return 0, err
-		}
-		if sp.savedColor == "" {
-			err := fmt.Errorf("error on line %d: No color saved, use savecolor command first", lineNumber)
-			return 0, err
-		}
-		r, g, b := hexToRGB(sp.savedColor)
-		fmt.Printf("RGB(%d, %d, %d)", r, g, b)
-
-	case "printcolorhex":
-		if len(args) != 0 {
-			err := fmt.Errorf("error on line %d: printcolorhex command requires no arguments", lineNumber)
-			return 0, err
-		}
-		if sp.savedColor == "" {
-			err := fmt.Errorf("error on line %d: No color saved, use savecolor command first", lineNumber)
-			return 0, err
-		}
-		fmt.Printf("#%s", sp.savedColor)
-
-	case "ifcolor":
-		if len(args) != 2 {
-			err := fmt.Errorf("error on line %d: ifcolor command requires exactly 2 arguments", lineNumber)
-			return 0, err
-		}
-		if sp.savedColor == "" {
-			err := fmt.Errorf("error on line %d: No color saved, use savecolor command first", lineNumber)
-			return 0, err
+			return 0, fmt.Errorf("error on line %d: invalid coordinates for getcolor command", lineNumber)
 		}
 
-		colorHex := strings.TrimSpace(args[0])
-		colorHex = strings.TrimPrefix(colorHex, "#")
-		if len(colorHex) != 6 {
-			err := fmt.Errorf("error on line %d: Color hex must be exactly 6 characters, but got the number: %s", lineNumber, args[0])
-			return 0, err
+		colorHex := robotgo.GetPixelColor(x, y)
+
+		variable, exists := sp.variables[varName]
+		if exists && variable.Type != Str {
+			return 0, fmt.Errorf("error on line %d: variable %s must be of type Str", lineNumber, varName)
 		}
 
-		thresholdHex := strings.TrimSpace(args[1])
+		sp.variables[varName] = Variable{Type: Str, Value: "#" + colorHex}
+		return -1, nil
+
+	case "colorsmatch":
+		if len(args) != 3 {
+			return 0, fmt.Errorf("error on line %d: colorsmatch command requires exactly 3 arguments", lineNumber)
+		}
+
+		color1 := strings.TrimSpace(args[0])
+		color2 := strings.TrimSpace(args[1])
+		thresholdHex := strings.TrimSpace(args[2])
+
+		// Check if color1 and color2 are variables or string literals
+		if var1, exists := sp.variables[color1]; exists && var1.Type == Str {
+			color1 = var1.Value
+		} else if strings.HasPrefix(color1, "\"") && strings.HasSuffix(color1, "\"") {
+			color1 = color1[1 : len(color1)-1]
+		} else {
+			return 0, fmt.Errorf("error on line %d: invalid color1 value", lineNumber)
+		}
+
+		if var2, exists := sp.variables[color2]; exists && var2.Type == Str {
+			color2 = var2.Value
+		} else if strings.HasPrefix(color2, "\"") && strings.HasSuffix(color2, "\"") {
+			color2 = color2[1 : len(color2)-1]
+		} else {
+			return 0, fmt.Errorf("error on line %d: invalid color2 value", lineNumber)
+		}
+
+		// Validate colors
+		color1 = strings.TrimPrefix(color1, "#")
+		color2 = strings.TrimPrefix(color2, "#")
+		if len(color1) != 6 || len(color2) != 6 {
+			return 0, fmt.Errorf("error on line %d: Color hex must be exactly 6 characters", lineNumber)
+		}
+
+		// Validate threshold
 		thresholdHex = strings.TrimPrefix(thresholdHex, "#")
 		if len(thresholdHex) != 2 {
-			err := fmt.Errorf("error on line %d: Threshold hex must be exactly 2 characters, but got the number: %s", lineNumber, args[1])
-			return 0, err
+			return 0, fmt.Errorf("error on line %d: Threshold hex must be exactly 2 characters", lineNumber)
 		}
 
 		threshold, err := strconv.ParseInt(thresholdHex, 16, 0)
 		if err != nil {
-			err := fmt.Errorf("error on line %d: Threshold is not a valid hexadecimal number: %s", lineNumber, args[1])
-			return 0, err
+			return 0, fmt.Errorf("error on line %d: Threshold is not a valid hexadecimal number: %s", lineNumber, args[2])
 		}
 
-		if !sp.colorsMatch(sp.savedColor, colorHex, int(threshold)) {
+		if !sp.colorsMatch(color1, color2, int(threshold)) {
 			sp.executeNextLine = false
 		}
+
+		return -1, nil
 
 	default:
 		err := fmt.Errorf("error on line %d: Unknown command: %s", lineNumber, command)
@@ -456,24 +656,4 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 
 	}
 	return -1, nil
-}
-
-func (sp *ScriptProcessor) concatenateStringArguments(args []string, lineNumber int) (string, error) {
-	var output strings.Builder
-	for _, arg := range args {
-		arg = strings.TrimSpace(arg)
-		if strings.HasPrefix(arg, "\"") && strings.HasSuffix(arg, "\"") {
-			// Argument is a string literal
-			output.WriteString(strings.Trim(arg, "\""))
-		} else {
-			// Argument is a variable
-			if value, ok := sp.variables[arg]; ok {
-				output.WriteString(strconv.Itoa(value))
-			} else {
-				err := fmt.Errorf("error on line %d: Variable not declared: %s", lineNumber, arg)
-				return "", err
-			}
-		}
-	}
-	return output.String(), nil
 }
