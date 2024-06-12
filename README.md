@@ -26,15 +26,15 @@ go build -ldflags="-s -w" .
 ### Example
 ```
 #start
-println: Hello, World!
+println: "Hello, World!"
 set: x, 200
 set: y, 40
 ; This is a comment and will be skipped
 move: x, y
 goto: end
-println: This will be skipped.
+println: "This will be skipped."
 #end
-println: End of the script.
+println: "End of the script."
 ```
 
 ## Commands
@@ -154,8 +154,8 @@ println: End of the script.
 
 ### Example 1: Simple Print
 ```
-println: Hello, World!
-println: This is Gobot.
+println: "Hello, World!"
+println: "This is Gobot."
 ```
 
 ### Example 2: Mouse Movement and Click
@@ -171,10 +171,10 @@ release: lmouse
 savecolor: 200, 300
 printcolorhex
 ifcolor: ffffff, 0a
-    println: The color is white.
+    println: "The color is white."
 ```
 
-### Example 4: Using Variables
+### Example 4: Using and Printing Variables
 ```
 set: a, 10
 add: a, 5
