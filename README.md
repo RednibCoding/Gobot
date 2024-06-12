@@ -20,41 +20,33 @@ go build -ldflags="-s -w" .
 - A label should be defined by a leading `#` and can be referred to in a `goto` command.
 - Only one command or label can be on a line.
 - Lines starting with a `;` are considered comments and will be skipped.
-- In commands like `wait`, `move`, `ifcolor`, `set`, `add`, `sub`, `ifequal`, `ifgreater`, and `ifless`, arguments can be variables (letters from 'a' to 'z'). These variables will be evaluated to their current values.
+- In commands like `print`, `println`, `wait`, `move`, `ifcolor`, `set`, `add`, `sub`, `ifequal`, `ifgreater`, and `ifless`, arguments can be variables (letters from 'a' to 'z'). These variables will be evaluated to their current values.
 
 ### Example
 ```
 #start
-print: Hello, World!
-printnl
+println: Hello, World!
 set: x, 200
 set: y, 40
 ; This is a comment and will be skipped
 move: x, y
 goto: end
-print: This will be skipped.
-printnl
+println: This will be skipped.
 #end
-print: End of the script.
-printnl
+println: End of the script.
 ```
 
 ## Commands
 
 ### print
-- **Syntax**: `print: <string>`
-- **Description**: Prints the given string.
-- **Example**: `print: Hello, World!`
-
-### printnl
-- **Syntax**: `printnl`
-- **Description**: Prints a new line.
-- **Example**: `printnl`
+- **Syntax**: `print: <arg1>, <arg2>, ...`
+- **Description**: Prints the given arguments. String arguments must be enclosed in double quotes, variables are not.
+- **Example**: `print: "Hello,", " World!", varName`
 
 ### println
-- **Syntax**: `println: <string>`
-- **Description**: Prints the given string and a new line.
-- **Example**: `println: Hello, World!`
+- **Syntax**: `println: <arg1>, <arg2>, ...`
+- **Description**: Prints the given arguments and a new line. String arguments must be enclosed in double quotes, variables are not.
+- **Example**: `println: "Hello,", " World!", varName`
 
 ### move
 - **Syntax**: `move: <x>, <y>`
@@ -145,20 +137,12 @@ printnl
 - **Syntax**: `ifless: <variable>, <value>`
 - **Description**: Executes the next command if the variable is less than the specified value.
 - **Example**: `ifless: a, 10`
-
-### printvar
-- **Syntax**: `printvar: <variable>`
-- **Description**: Prints the value of the specified variable.
-- **Example**: `printvar: a`
-
 ## Examples
 
 ### Example 1: Simple Print
 ```
-print: Hello, World!
-printnl
-print: This is Gobot.
-printnl
+println: Hello, World!
+println: This is Gobot.
 ```
 
 ### Example 2: Mouse Movement and Click
@@ -171,12 +155,10 @@ release: lmouse
 
 ### Example 3: Color Checking
 ```
-move: 150, 150
-savecolor
+savecolor: 200, 300
 printcolorhex
 ifcolor: ffffff, 0a
-    print: The color is white.
-printnl
+    println: The color is white.
 ```
 
 ### Example 4: Using Variables
@@ -184,42 +166,37 @@ printnl
 set: a, 10
 add: a, 5
 sub: a, 3
+
 ifequal: a, 12
-    print: Variable a is 12.
-printnl
+    println: "Variable a is: ", a
+
 ifgreater: a, 10
-    print: Variable a is greater than 10.
-printnl
+    println: "Variable a is greater than 10"
+
 ifless: a, 15
-    print: Variable a is less than 15.
-printnl
-printvar: a
-printnl
+    println: "Variable a is less than 15"
 ```
 
 ### Example 5: Conditional Execution with Keys
 ```
 press: lshift
 ifpressed: lshift
-    print: lshift is pressed.
-printnl
+    print: "lshift is pressed."
+
 release: lshift
+
 ifnotpressed: lshift
-    print: lshift is not pressed.
-printnl
+    println: "lshift is not pressed."
 ```
 
 ### Labels and Goto
 ```
 #start
-print: Start of the script.
-printnl
+println: "Start of the script."
 goto: end
-print: This will be skipped.
-printnl
+println: "This will be skipped."
 #end
-print: End of the script.
-printnl
+println: "End of the script."
 ```
 
 ## Supported Keys

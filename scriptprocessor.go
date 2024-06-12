@@ -74,23 +74,26 @@ func (sp *ScriptProcessor) executeScript(lines []string) {
 func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNumber int) (int, error) {
 	switch command {
 	case "println":
-		if len(args) != 1 {
-			err := fmt.Errorf("error on line %d: println command requires exactly 1 argument", lineNumber)
+		if len(args) < 1 {
+			err := fmt.Errorf("error on line %d: println command requires at least 1 argument", lineNumber)
 			return 0, err
 		}
-		fmt.Println(args[0])
+		output, err := sp.concatenateStringArguments(args, lineNumber)
+		if err != nil {
+			return 0, err
+		}
+		fmt.Println(output)
+
 	case "print":
-		if len(args) != 1 {
-			err := fmt.Errorf("error on line %d: print command requires exactly 1 argument", lineNumber)
+		if len(args) < 1 {
+			err := fmt.Errorf("error on line %d: print command requires at least 1 argument", lineNumber)
 			return 0, err
 		}
-		fmt.Print(args[0])
-	case "printnl":
-		if len(args) != 0 {
-			err := fmt.Errorf("error on line %d: printnl command requires no arguments", lineNumber)
+		output, err := sp.concatenateStringArguments(args, lineNumber)
+		if err != nil {
 			return 0, err
 		}
-		fmt.Print("\n")
+		fmt.Print(output)
 	case "move":
 		if len(args) != 2 {
 			err := fmt.Errorf("error on line %d: move command requires exactly 2 arguments", lineNumber)
@@ -208,18 +211,6 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 		}
 		duration, _ := strconv.Atoi(strings.TrimSpace(args[0]))
 		time.Sleep(time.Duration(duration) * time.Millisecond)
-	case "printvar":
-		if len(args) != 1 {
-			err := fmt.Errorf("error on line %d: printvar command requires exactly 1 argument", lineNumber)
-			return 0, err
-		}
-		varName := strings.TrimSpace(args[0])
-		if value, ok := sp.variables[varName]; ok {
-			fmt.Print(value)
-		} else {
-			err := fmt.Errorf("error on line %d: Variable not declared: %s", lineNumber, varName)
-			return 0, err
-		}
 	case "goto":
 		if len(args) != 1 {
 			err := fmt.Errorf("error on line %d: goto command requires exactly 1 argument", lineNumber)
@@ -387,4 +378,24 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 
 	}
 	return -1, nil
+}
+
+func (sp *ScriptProcessor) concatenateStringArguments(args []string, lineNumber int) (string, error) {
+	var output strings.Builder
+	for _, arg := range args {
+		arg = strings.TrimSpace(arg)
+		if strings.HasPrefix(arg, "\"") && strings.HasSuffix(arg, "\"") {
+			// Argument is a string literal
+			output.WriteString(strings.Trim(arg, "\""))
+		} else {
+			// Argument is a variable
+			if value, ok := sp.variables[arg]; ok {
+				output.WriteString(strconv.Itoa(value))
+			} else {
+				err := fmt.Errorf("error on line %d: Variable not declared: %s", lineNumber, arg)
+				return "", err
+			}
+		}
+	}
+	return output.String(), nil
 }
