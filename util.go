@@ -82,5 +82,28 @@ func initializeKeyMap() map[string]string {
 		keyMap[strconv.Itoa(i)] = strconv.Itoa(i)
 	}
 
+	// Numpad keys
+	for i := 0; i <= 9; i++ {
+		keyMap["numpad"+strconv.Itoa(i)] = "numpad" + strconv.Itoa(i)
+	}
+	keyMap["numpadadd"] = "numpadadd"
+	keyMap["numpadsub"] = "numpadsub"
+	keyMap["numpadmul"] = "numpadmul"
+	keyMap["numpaddiv"] = "numpaddiv"
+	keyMap["numpaddecimal"] = "numpaddecimal"
+	keyMap["numpadenter"] = "numpadenter"
+
+	// Symbols
+	keyMap["semicolon"] = ";"
+	keyMap["equals"] = "="
+	keyMap["comma"] = ","
+	keyMap["minus"] = "-"
+	keyMap["period"] = "."
+	keyMap["slash"] = "/"
+	keyMap["backslash"] = "\\"
+	keyMap["openbracket"] = "["
+	keyMap["closebracket"] = "]"
+	keyMap["quote"] = "'"
+
 	return keyMap
 }
