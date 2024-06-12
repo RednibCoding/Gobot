@@ -21,6 +21,7 @@ go build -ldflags="-s -w" .
 - Only one command or label can be on a line.
 - Lines starting with a `;` are considered comments and will be skipped.
 - In commands like `print`, `println`, `wait`, `move`, `ifcolor`, `set`, `add`, `sub`, `ifequal`, `ifgreater`, and `ifless`, arguments can also be variables. These variables will be evaluated to their current values.
+- All variables are of type Integer (whole numbers)
 
 ### Example
 ```
