@@ -327,6 +327,20 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 		varName := strings.TrimSpace(args[0])
 		varValue := strings.TrimSpace(args[1])
 
+		// Check if varValue is another variable
+		if refVar, exists := sp.variables[varValue]; exists {
+			varValue = refVar.Value
+			varType := refVar.Type
+			// Check if variable exists and its type
+			if variable, exists := sp.variables[varName]; exists {
+				if variable.Type != varType {
+					return 0, fmt.Errorf("error on line %d: cannot redefine variable %s with a different type", lineNumber, varName)
+				}
+			}
+			sp.variables[varName] = Variable{Type: varType, Value: varValue}
+			return -1, nil
+		}
+
 		// Determine the type of the variable
 		varType := Str
 		if strings.HasPrefix(varValue, "\"") && strings.HasSuffix(varValue, "\"") {
