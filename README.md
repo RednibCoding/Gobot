@@ -20,7 +20,7 @@ go build -ldflags="-s -w" .
 - A label should be defined by a leading `#` and can be referred to in a `goto` command.
 - Only one command or label can be on a line.
 - Lines starting with a `;` are considered comments and will be skipped.
-- In commands like `print`, `println`, `wait`, `move`, `ifcolor`, `set`, `add`, `sub`, `ifequal`, `ifgreater`, and `ifless`, arguments can be variables (letters from 'a' to 'z'). These variables will be evaluated to their current values.
+- In commands like `print`, `println`, `wait`, `move`, `ifcolor`, `set`, `add`, `sub`, `ifequal`, `ifgreater`, and `ifless`, arguments can also be variables. These variables will be evaluated to their current values.
 
 ### Example
 ```
