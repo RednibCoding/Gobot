@@ -56,6 +56,7 @@ func initializeKeyMap() map[string]string {
 
 	keyMap["lmouse"] = "left"
 	keyMap["rmouse"] = "right"
+	keyMap["mmouse"] = "center"
 	keyMap["lshift"] = "lshift"
 	keyMap["rshift"] = "rshift"
 	keyMap["lctrl"] = "lctrl"
