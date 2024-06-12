@@ -228,7 +228,7 @@ ifless: a, 15
     println: "Variable a is less than 15"
 ```
 
-#### Example 5: Arithmetic Operations
+### Example 5: Arithmetic Operations
 ```
 set: myInt, 10
 set: myFloat, 3.14
@@ -242,7 +242,8 @@ println: "New myInt after subtraction: ", myInt
 println: "New myFloat after subtraction: ", myFloat
 ```
 
-#### Example 6: String Concatenation
+### Example 6: String Concatenation
+```
 set: myString, "Hello"
 add: myString, ", Gobot!"
 println: myString
@@ -250,6 +251,7 @@ add: myString, 10
 set: myFloat, 3.14
 add: myString, myFloat
 println: myString
+```
 
 ### Example 7: Conditional Execution with Keys
 ```
