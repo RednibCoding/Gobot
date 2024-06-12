@@ -18,6 +18,19 @@ const (
 	Flt
 )
 
+func (vt VarType) String() string {
+	switch vt {
+	case Int:
+		return "Integer"
+	case Flt:
+		return "Float"
+	case Str:
+		return "String"
+	default:
+		return "Unknown"
+	}
+}
+
 type Variable struct {
 	Type  VarType
 	Value string
@@ -515,66 +528,65 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 		}
 		return -1, nil
 
-	case "ifequal", "ifgreater", "ifless":
+	case "ifequal", "ifless", "ifgreater":
 		if len(args) != 2 {
-			err := fmt.Errorf("error on line %d: %s command requires exactly 2 arguments", lineNumber, command)
-			return 0, err
+			return 0, fmt.Errorf("error on line %d: %s command requires exactly 2 arguments", lineNumber, command)
 		}
-		varName := strings.TrimSpace(args[0])
-		varValue := strings.TrimSpace(args[1])
+		varName1 := strings.TrimSpace(args[0])
+		varName2 := strings.TrimSpace(args[1])
 
-		variable, exists := sp.variables[varName]
-		if !exists {
-			err := fmt.Errorf("error on line %d: variable %s not defined", lineNumber, varName)
-			return 0, err
+		var1, exists1 := sp.variables[varName1]
+		var2, exists2 := sp.variables[varName2]
+
+		if !exists1 || !exists2 {
+			return 0, fmt.Errorf("error on line %d: variable %s or %s not defined", lineNumber, varName1, varName2)
 		}
 
-		switch variable.Type {
-		case Int:
-			intValue, err := strconv.Atoi(variable.Value)
-			if err != nil {
-				return 0, fmt.Errorf("error on line %d: invalid integer value", lineNumber)
-			}
-			argValue, err := strconv.Atoi(varValue)
-			if err != nil {
-				return 0, fmt.Errorf("error on line %d: invalid integer value", lineNumber)
-			}
-			if (command == "ifequal" && intValue == argValue) ||
-				(command == "ifgreater" && intValue > argValue) ||
-				(command == "ifless" && intValue < argValue) {
-				sp.executeNextLine = true
+		// Handle string comparisons for ifequal only
+		if var1.Type == Str && var2.Type == Str {
+			if command == "ifequal" {
+				if var1.Value == var2.Value {
+					sp.executeNextLine = true
+				} else {
+					sp.executeNextLine = false
+				}
+				return -1, nil
 			} else {
-				sp.executeNextLine = false
+				return 0, fmt.Errorf("error on line %d: %s command not supported for string variables", lineNumber, command)
 			}
-
-		case Flt:
-			floatValue, err := strconv.ParseFloat(variable.Value, 64)
-			if err != nil {
-				return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
-			}
-			argValue, err := strconv.ParseFloat(varValue, 64)
-			if err != nil {
-				return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
-			}
-			if (command == "ifequal" && floatValue == argValue) ||
-				(command == "ifgreater" && floatValue > argValue) ||
-				(command == "ifless" && floatValue < argValue) {
-				sp.executeNextLine = true
-			} else {
-				sp.executeNextLine = false
-			}
-
-		case Str:
-			if command == "ifequal" && variable.Value == varValue {
-				sp.executeNextLine = true
-			} else {
-				sp.executeNextLine = false
-			}
-
-		default:
-			return 0, fmt.Errorf("error on line %d: unsupported variable type for %s command", lineNumber, command)
 		}
-		return -1, nil
+
+		// Handle integer and float comparisons
+		var1Float, err1 := strconv.ParseFloat(var1.Value, 64)
+		var2Float, err2 := strconv.ParseFloat(var2.Value, 64)
+		if (var1.Type == Int || var1.Type == Flt) && (var2.Type == Int || var2.Type == Flt) {
+			if err1 != nil || err2 != nil {
+				return 0, fmt.Errorf("error on line %d: invalid numeric value for comparison", lineNumber)
+			}
+			switch command {
+			case "ifequal":
+				if var1Float == var2Float {
+					sp.executeNextLine = true
+				} else {
+					sp.executeNextLine = false
+				}
+			case "ifless":
+				if var1Float < var2Float {
+					sp.executeNextLine = true
+				} else {
+					sp.executeNextLine = false
+				}
+			case "ifgreater":
+				if var1Float > var2Float {
+					sp.executeNextLine = true
+				} else {
+					sp.executeNextLine = false
+				}
+			}
+			return -1, nil
+		}
+
+		return 0, fmt.Errorf("error on line %d: incompatible types for comparison: %s and %s", lineNumber, var1.Type, var2.Type)
 
 	case "getcolor":
 		if len(args) != 3 {
