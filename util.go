@@ -54,17 +54,18 @@ func splitArgs(argsStr string) []string {
 func initializeKeyMap() map[string]string {
 	keyMap := make(map[string]string)
 
-	keyMap["lshift"] = "shift"
-	keyMap["rshift"] = "shift"
-	keyMap["lctrl"] = "ctrl"
-	keyMap["rctrl"] = "ctrl"
-	keyMap["lalt"] = "alt"
-	keyMap["ralt"] = "alt"
+	keyMap["lshift"] = "lshift"
+	keyMap["rshift"] = "rshift"
+	keyMap["lctrl"] = "lctrl"
+	keyMap["rctrl"] = "rctrl"
+	keyMap["lalt"] = "lalt"
+	keyMap["ralt"] = "ralt"
 	keyMap["space"] = "space"
 	keyMap["enter"] = "enter"
 	keyMap["backspace"] = "backspace"
 	keyMap["tab"] = "tab"
 	keyMap["esc"] = "esc"
+	keyMap["escape"] = "esc"
 	keyMap["delete"] = "delete"
 	keyMap["insert"] = "insert"
 	keyMap["home"] = "home"
@@ -75,56 +76,88 @@ func initializeKeyMap() map[string]string {
 	keyMap["down"] = "down"
 	keyMap["left"] = "left"
 	keyMap["right"] = "right"
-	keyMap["f1"] = "f1"
-	keyMap["f2"] = "f2"
-	keyMap["f3"] = "f3"
-	keyMap["f4"] = "f4"
-	keyMap["f5"] = "f5"
-	keyMap["f6"] = "f6"
-	keyMap["f7"] = "f7"
-	keyMap["f8"] = "f8"
-	keyMap["f9"] = "f9"
-	keyMap["f10"] = "f10"
-	keyMap["f11"] = "f11"
-	keyMap["f12"] = "f12"
-	keyMap["numlock"] = "numlock"
-	keyMap["capslock"] = "capslock"
-	keyMap["scrolllock"] = "scrolllock"
-	keyMap["pause"] = "pause"
-	keyMap["printscreen"] = "printscreen"
-	keyMap["windows"] = "win"
-	keyMap["lmouse"] = "left"
-	keyMap["rmouse"] = "right"
 
-	for c := 'a'; c <= 'z'; c++ {
-		keyMap[string(c)] = string(c)
+	// Function keys
+	for i := 1; i <= 24; i++ {
+		keyMap["f"+strconv.Itoa(i)] = "f" + strconv.Itoa(i)
 	}
+
+	keyMap["cmd"] = "cmd"
+	keyMap["lcmd"] = "lcmd"
+	keyMap["rcmd"] = "rcmd"
+	keyMap["alt"] = "alt"
+	keyMap["ctrl"] = "ctrl"
+	keyMap["control"] = "control"
+	keyMap["shift"] = "shift"
+	keyMap["capslock"] = "capslock"
+	keyMap["print"] = "print"
+	keyMap["printscreen"] = "printscreen"
+	keyMap["menu"] = "menu"
+	keyMap["audio_mute"] = "audio_mute"
+	keyMap["audio_vol_down"] = "audio_vol_down"
+	keyMap["audio_vol_up"] = "audio_vol_up"
+	keyMap["audio_play"] = "audio_play"
+	keyMap["audio_stop"] = "audio_stop"
+	keyMap["audio_pause"] = "audio_pause"
+	keyMap["audio_prev"] = "audio_prev"
+	keyMap["audio_next"] = "audio_next"
+	keyMap["audio_rewind"] = "audio_rewind"
+	keyMap["audio_forward"] = "audio_forward"
+	keyMap["audio_repeat"] = "audio_repeat"
+	keyMap["audio_random"] = "audio_random"
+
+	// Number keys
 	for i := 0; i <= 9; i++ {
 		keyMap[strconv.Itoa(i)] = strconv.Itoa(i)
 	}
 
 	// Numpad keys
-	for i := 0; i <= 9; i++ {
-		keyMap["numpad"+strconv.Itoa(i)] = "numpad" + strconv.Itoa(i)
+	keyMap["num0"] = "num0"
+	keyMap["num1"] = "num1"
+	keyMap["num2"] = "num2"
+	keyMap["num3"] = "num3"
+	keyMap["num4"] = "num4"
+	keyMap["num5"] = "num5"
+	keyMap["num6"] = "num6"
+	keyMap["num7"] = "num7"
+	keyMap["num8"] = "num8"
+	keyMap["num9"] = "num9"
+	keyMap["num_lock"] = "num_lock"
+	keyMap["num."] = "num."
+	keyMap["num+"] = "num+"
+	keyMap["num-"] = "num-"
+	keyMap["num*"] = "num*"
+	keyMap["num/"] = "num/"
+	keyMap["num_clear"] = "num_clear"
+	keyMap["num_enter"] = "num_enter"
+	keyMap["num_equal"] = "num_equal"
+
+	// Monitor and keyboard light control keys
+	keyMap["lights_mon_up"] = "lights_mon_up"
+	keyMap["lights_mon_down"] = "lights_mon_down"
+	keyMap["lights_kbd_toggle"] = "lights_kbd_toggle"
+	keyMap["lights_kbd_up"] = "lights_kbd_up"
+	keyMap["lights_kbd_down"] = "lights_kbd_down"
+
+	// Alphabet keys
+	for c := 'a'; c <= 'z'; c++ {
+		keyMap[string(c)] = string(c)
 	}
-	keyMap["numpadadd"] = "numpadadd"
-	keyMap["numpadsub"] = "numpadsub"
-	keyMap["numpadmul"] = "numpadmul"
-	keyMap["numpaddiv"] = "numpaddiv"
-	keyMap["numpaddecimal"] = "numpaddecimal"
-	keyMap["numpadenter"] = "numpadenter"
+	for c := 'A'; c <= 'Z'; c++ {
+		keyMap[string(c)] = string(c)
+	}
 
 	// Symbols
-	keyMap["semicolon"] = ";"
-	keyMap["equals"] = "="
-	keyMap["comma"] = ","
-	keyMap["minus"] = "-"
-	keyMap["period"] = "."
-	keyMap["slash"] = "/"
-	keyMap["backslash"] = "\\"
-	keyMap["openbracket"] = "["
-	keyMap["closebracket"] = "]"
-	keyMap["quote"] = "'"
+	keyMap[";"] = "semicolon"
+	keyMap["="] = "equals"
+	keyMap[","] = "comma"
+	keyMap["-"] = "minus"
+	keyMap["."] = "period"
+	keyMap["/"] = "slash"
+	keyMap["\\"] = "backslash"
+	keyMap["["] = "openbracket"
+	keyMap["]"] = "closebracket"
+	keyMap["'"] = "quote"
 
 	return keyMap
 }

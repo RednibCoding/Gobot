@@ -365,6 +365,7 @@ println: "This will be skipped."
 - **backspace**: Backspace key
 - **tab**: Tab key
 - **esc**: Escape key
+- **escape**: Escape key
 - **delete**: Delete key
 - **insert**: Insert key
 - **home**: Home key
@@ -375,30 +376,51 @@ println: "This will be skipped."
 - **down**: Down Arrow key
 - **left**: Left Arrow key
 - **right**: Right Arrow key
-- **f1** to **f12**: Function keys F1 to F12
-- **numlock**: Num Lock key
+- **cmd**: Command key (Windows key for Windows)
+- **lcmd**: Left Command key
+- **rcmd**: Right Command key
+- **alt**: Alt key
+- **ctrl**: Control key
+- **control**: Control key
+- **shift**: Shift key
 - **capslock**: Caps Lock key
-- **scrolllock**: Scroll Lock key
-- **pause**: Pause key
+- **print**: Print key
 - **printscreen**: Print Screen key
-- **windows**: Windows key
-- **lmouse**: Left Mouse Button
-- **rmouse**: Right Mouse Button
+- **menu**: Menu key (Windows only)
+- **audio_mute**: Mute the volume
+- **audio_vol_down**: Lower the volume
+- **audio_vol_up**: Increase the volume
+- **audio_play**: Play audio
+- **audio_stop**: Stop audio
+- **audio_pause**: Pause audio
+- **audio_prev**: Previous track
+- **audio_next**: Next track
+- **audio_rewind**: Rewind (Linux only)
+- **audio_forward**: Forward (Linux only)
+- **audio_repeat**: Repeat (Linux only)
+- **audio_random**: Random (Linux only)
+- **num0** to **num9**: Numpad keys 0 to 9
+- **num_lock**: Num Lock key
+- **num.**: Numpad Decimal key
+- **num+**: Numpad Add key
+- **num-**: Numpad Subtract key
+- **num***: Numpad Multiply key
+- **num/**: Numpad Divide key
+- **num_clear**: Numpad Clear key
+- **num_enter**: Numpad Enter key
+- **num_equal**: Numpad Equal key
+- **lights_mon_up**: Turn up monitor brightness (No Windows support)
+- **lights_mon_down**: Turn down monitor brightness (No Windows support)
+- **lights_kbd_toggle**: Toggle keyboard backlight on/off (No Windows support)
+- **lights_kbd_up**: Turn up keyboard backlight brightness (No Windows support)
+- **lights_kbd_down**: Turn down keyboard backlight brightness (No Windows support)
 
 ### Alphabet Keys
 - **a** to **z**: Alphabet keys A to Z
+- **A** to **Z**: Alphabet keys A to Z
 
 ### Number Keys
 - **0** to **9**: Number keys 0 to 9
-
-### Numpad Keys
-- **numpad0** to **numpad9**: Numpad keys 0 to 9
-- **numpadadd**: Numpad Add key
-- **numpadsub**: Numpad Subtract key
-- **numpadmul**: Numpad Multiply key
-- **numpaddiv**: Numpad Divide key
-- **numpaddecimal**: Numpad Decimal key
-- **numpadenter**: Numpad Enter key
 
 ### Symbols
 - **semicolon**: Semicolon (;)
