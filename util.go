@@ -54,6 +54,8 @@ func splitArgs(argsStr string) []string {
 func initializeKeyMap() map[string]string {
 	keyMap := make(map[string]string)
 
+	keyMap["lmouse"] = "left"
+	keyMap["rmouse"] = "right"
 	keyMap["lshift"] = "lshift"
 	keyMap["rshift"] = "rshift"
 	keyMap["lctrl"] = "lctrl"

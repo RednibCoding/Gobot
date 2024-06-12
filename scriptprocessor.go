@@ -157,7 +157,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			key := sp.keyMap[arg]
 			if key != "" {
 				if key == "left" || key == "right" {
-					robotgo.Click(key, false)
+					robotgo.Toggle(key)
 				} else {
 					robotgo.KeyTap(key)
 				}
@@ -174,7 +174,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			key := sp.keyMap[arg]
 			if key != "" {
 				if key == "left" || key == "right" {
-					robotgo.Click(key, true)
+					robotgo.Toggle(key, "up")
 				} else {
 					robotgo.KeyTap(key)
 				}
@@ -198,9 +198,9 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			key := sp.keyMap[arg]
 			if key != "" {
 				if key == "left" || key == "right" {
-					robotgo.Click(key, false)
+					robotgo.Toggle(key)
 				} else {
-					robotgo.KeyTap(key)
+					robotgo.KeyToggle(key)
 				}
 				sp.pressedKeys[arg] = true
 			} else {
@@ -221,9 +221,9 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			key := sp.keyMap[arg]
 			if key != "" {
 				if key == "left" || key == "right" {
-					robotgo.Click(key, true)
+					robotgo.Toggle(key, "up")
 				} else {
-					robotgo.KeyTap(key)
+					robotgo.KeyToggle(key, "up")
 				}
 				delete(sp.pressedKeys, arg)
 			} else {
