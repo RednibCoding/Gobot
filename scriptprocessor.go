@@ -134,24 +134,12 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			return 0, fmt.Errorf("error on line %d: move command requires exactly 2 arguments", lineNumber)
 		}
 
-		// Function to resolve an argument to its integer value
-		resolveInt := func(arg string) (int, error) {
-			arg = strings.TrimSpace(arg)
-			if variable, exists := sp.variables[arg]; exists {
-				if variable.Type != Int {
-					return 0, fmt.Errorf("error on line %d: variable %s is not an integer", lineNumber, arg)
-				}
-				return strconv.Atoi(variable.Value)
-			}
-			return strconv.Atoi(arg)
-		}
-
-		x, errX := resolveInt(args[0])
+		x, errX := sp.resolveInt(args[0], lineNumber)
 		if errX != nil {
 			return 0, fmt.Errorf("error on line %d: invalid integer value for x-coordinate: %s", lineNumber, args[0])
 		}
 
-		y, errY := resolveInt(args[1])
+		y, errY := sp.resolveInt(args[1], lineNumber)
 		if errY != nil {
 			return 0, fmt.Errorf("error on line %d: invalid integer value for y-coordinate: %s", lineNumber, args[1])
 		}
@@ -669,13 +657,15 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			return 0, fmt.Errorf("error on line %d: getcolor command requires exactly 3 arguments", lineNumber)
 		}
 		varName := strings.TrimSpace(args[0])
-		xStr := strings.TrimSpace(args[1])
-		yStr := strings.TrimSpace(args[2])
 
-		x, errX := strconv.Atoi(xStr)
-		y, errY := strconv.Atoi(yStr)
-		if errX != nil || errY != nil {
-			return 0, fmt.Errorf("error on line %d: invalid coordinates for getcolor command", lineNumber)
+		x, errX := sp.resolveInt(args[1], lineNumber)
+		if errX != nil {
+			return 0, errX
+		}
+
+		y, errY := sp.resolveInt(args[2], lineNumber)
+		if errY != nil {
+			return 0, errY
 		}
 
 		colorHex := robotgo.GetPixelColor(x, y)
@@ -744,4 +734,19 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 
 	}
 	return -1, nil
+}
+
+// Function to resolve an argument to its integer value
+func (sp *ScriptProcessor) resolveInt(arg string, lineNumber int) (int, error) {
+	arg = strings.TrimSpace(arg)
+	if variable, exists := sp.variables[arg]; exists {
+		if variable.Type != Int {
+			return 0, fmt.Errorf("error on line %d: variable %s is not an integer", lineNumber, arg)
+		}
+		return strconv.Atoi(variable.Value)
+	}
+	if value, err := strconv.Atoi(arg); err == nil {
+		return value, nil
+	}
+	return 0, fmt.Errorf("error on line %d: variable %s not declared", lineNumber, arg)
 }
