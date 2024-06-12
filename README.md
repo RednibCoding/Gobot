@@ -178,6 +178,11 @@ In Gobot, variables can store different types of values including integers, floa
 - **Description**: Executes the next command if the variable equals the specified value.
 - **Example**: `ifequal: a, 10`
 
+### ifnotequal
+- **Syntax**: `ifnotequal: <variable>, <value>`
+- **Description**: Executes the next command if the variable does not equal the specified value.
+- **Example**: `ifnotequal: a, 10`
+
 ### ifgreater
 - **Syntax**: `ifgreater: <variable>, <value>`
 - **Description**: Executes the next command if the variable is greater than the specified value.
@@ -220,6 +225,9 @@ sub: a, 3
 
 ifequal: a, 12
     println: "Variable a is: ", a
+  
+ifnotequal: a, 12
+    println: "Variable a is not: ", a
 
 ifgreater: a, 10
     println: "Variable a is greater than 10"

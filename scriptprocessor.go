@@ -551,7 +551,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 		}
 		return -1, nil
 
-	case "ifequal", "ifless", "ifgreater":
+	case "ifequal", "ifnotequal", "ifless", "ifgreater":
 		if len(args) != 2 {
 			return 0, fmt.Errorf("error on line %d: %s command requires exactly 2 arguments", lineNumber, command)
 		}
@@ -559,16 +559,43 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 		varName2 := strings.TrimSpace(args[1])
 
 		var1, exists1 := sp.variables[varName1]
-		var2, exists2 := sp.variables[varName2]
+		var var2 Variable
 
-		if !exists1 || !exists2 {
-			return 0, fmt.Errorf("error on line %d: variable %s or %s not defined", lineNumber, varName1, varName2)
+		// Check if the second argument is a variable or a constant
+		if var2Temp, exists := sp.variables[varName2]; exists {
+			var2 = var2Temp
+		} else {
+			// Determine the type of the second argument
+			if strings.HasPrefix(varName2, "\"") && strings.HasSuffix(varName2, "\"") {
+				var2 = Variable{Type: Str, Value: varName2[1 : len(varName2)-1]}
+			} else if strings.Contains(varName2, ".") {
+				if _, err := strconv.ParseFloat(varName2, 64); err == nil {
+					var2 = Variable{Type: Flt, Value: varName2}
+				} else {
+					return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
+				}
+			} else if _, err := strconv.Atoi(varName2); err == nil {
+				var2 = Variable{Type: Int, Value: varName2}
+			} else {
+				return 0, fmt.Errorf("error on line %d: variable %s or constant %s not defined", lineNumber, varName1, varName2)
+			}
+		}
+
+		if !exists1 {
+			return 0, fmt.Errorf("error on line %d: variable %s not defined", lineNumber, varName1)
 		}
 
 		// Handle string comparisons for ifequal only
 		if var1.Type == Str && var2.Type == Str {
 			if command == "ifequal" {
 				if var1.Value == var2.Value {
+					sp.executeNextLine = true
+				} else {
+					sp.executeNextLine = false
+				}
+				return -1, nil
+			} else if command == "ifnotequal" {
+				if var1.Value != var2.Value {
 					sp.executeNextLine = true
 				} else {
 					sp.executeNextLine = false
@@ -589,6 +616,12 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			switch command {
 			case "ifequal":
 				if var1Float == var2Float {
+					sp.executeNextLine = true
+				} else {
+					sp.executeNextLine = false
+				}
+			case "ifnotequal":
+				if var1Float != var2Float {
 					sp.executeNextLine = true
 				} else {
 					sp.executeNextLine = false
