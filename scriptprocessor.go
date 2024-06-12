@@ -322,29 +322,38 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 
 	case "set":
 		if len(args) != 2 {
-			err := fmt.Errorf("error on line %d: set command requires exactly 2 arguments", lineNumber)
-			return 0, err
+			return 0, fmt.Errorf("error on line %d: set command requires exactly 2 arguments", lineNumber)
 		}
 		varName := strings.TrimSpace(args[0])
 		varValue := strings.TrimSpace(args[1])
 
 		// Determine the type of the variable
+		varType := Str
 		if strings.HasPrefix(varValue, "\"") && strings.HasSuffix(varValue, "\"") {
 			// String type
-			sp.variables[varName] = Variable{Type: Str, Value: varValue[1 : len(varValue)-1]}
+			varValue = varValue[1 : len(varValue)-1]
 		} else if strings.Contains(varValue, ".") {
 			// Float type
+			varType = Flt
 			if _, err := strconv.ParseFloat(varValue, 64); err != nil {
 				return 0, fmt.Errorf("error on line %d: invalid float value", lineNumber)
 			}
-			sp.variables[varName] = Variable{Type: Flt, Value: varValue}
 		} else {
 			// Integer type
+			varType = Int
 			if _, err := strconv.Atoi(varValue); err != nil {
 				return 0, fmt.Errorf("error on line %d: invalid integer value", lineNumber)
 			}
-			sp.variables[varName] = Variable{Type: Int, Value: varValue}
 		}
+
+		// Check if variable exists and its type
+		if variable, exists := sp.variables[varName]; exists {
+			if variable.Type != varType {
+				return 0, fmt.Errorf("error on line %d: cannot redefine variable %s with a different type", lineNumber, varName)
+			}
+		}
+
+		sp.variables[varName] = Variable{Type: varType, Value: varValue}
 		return -1, nil
 
 	case "add":
