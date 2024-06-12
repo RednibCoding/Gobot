@@ -108,6 +108,8 @@ println: End of the script.
 - **Syntax**: `goto: <label>`
 - **Description**: Jumps to the specified label.
 - **Example**: `goto: start`
+- **Anonymous Labels**: Use `goto: @f` to jump to the next anonymous label and `goto: @b` to jump to the previous anonymous label. The number of `f` or `b` characters determines how many anonymous labels to jump forward or backward. For example, `goto: @fff` jumps three anonymous labels forward, and `goto: @bbb` jumps three anonymous labels backward.
+- **Define Anonymous Labels**: Use `#@` to define an anonymous label.
 
 ### gosub
 - **Syntax**: `gosub: <label>`
@@ -239,6 +241,38 @@ println: "This will be skipped."
 ; In subroutine 2
 ; Back from subroutine 2
 ; Back from subroutine 1
+; --- End of the script. ---
+```
+
+### Example 7: Anonymous Labels
+```
+println: "--- Start of the script. ---"
+goto: @f
+println: "This will be skipped."
+
+#@
+    println: "Reached the first anonymous label."
+    goto: @ff
+    println: "This will be skipped too."
+
+#@
+    println: "Reached the second anonymous label."
+    goto: end
+    println: "This will be skipped as well."
+
+#@ 
+    println: "Reached the third anonymous label."
+    goto: @bb
+    println: "This will be skipped as well."
+
+#end
+    println: "--- End of the script. ---"
+
+; output:
+; --- Start of the script. ---
+; Reached the first anonymous label.
+; Reached the third anonymous label.
+; Reached the second anonymous label.
 ; --- End of the script. ---
 ```
 

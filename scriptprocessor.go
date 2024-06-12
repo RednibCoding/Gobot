@@ -17,6 +17,7 @@ type ScriptProcessor struct {
 	executeNextLine bool
 	variables       map[string]int
 	labels          map[string]int
+	anonymousLabels []int
 	returnStack     []int
 }
 
@@ -27,6 +28,7 @@ func NewScriptProcessor() *ScriptProcessor {
 		variables:       make(map[string]int),
 		labels:          make(map[string]int),
 		executeNextLine: true,
+		anonymousLabels: []int{},
 		returnStack:     []int{},
 	}
 	sp.keyMap = initializeKeyMap()
@@ -38,7 +40,11 @@ func (sp *ScriptProcessor) executeScript(lines []string) {
 	for i, line := range lines {
 		line = strings.TrimSpace(line)
 		if strings.HasPrefix(line, "#") {
-			sp.labels[line[1:]] = i
+			if line == "#@" {
+				sp.anonymousLabels = append(sp.anonymousLabels, i)
+			} else {
+				sp.labels[line[1:]] = i
+			}
 		}
 	}
 
@@ -75,6 +81,7 @@ func (sp *ScriptProcessor) executeScript(lines []string) {
 
 func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNumber int) (int, error) {
 	switch command {
+
 	case "println":
 		if len(args) < 1 {
 			err := fmt.Errorf("error on line %d: println command requires at least 1 argument", lineNumber)
@@ -96,6 +103,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			return 0, err
 		}
 		fmt.Print(output)
+
 	case "move":
 		if len(args) != 2 {
 			err := fmt.Errorf("error on line %d: move command requires exactly 2 arguments", lineNumber)
@@ -104,6 +112,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 		x, _ := strconv.Atoi(strings.TrimSpace(args[0]))
 		y, _ := strconv.Atoi(strings.TrimSpace(args[1]))
 		robotgo.Move(x, y)
+
 	case "autopress":
 		if len(args) < 1 {
 			err := fmt.Errorf("error on line %d: autopress command requires at least 1 argument", lineNumber)
@@ -144,6 +153,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			time.Sleep(80 * time.Millisecond)
 		}
 		time.Sleep(80 * time.Millisecond)
+
 	case "press":
 		if len(args) < 1 {
 			err := fmt.Errorf("error on line %d: press command requires at least 1 argument", lineNumber)
@@ -166,6 +176,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			}
 			time.Sleep(40 * time.Millisecond)
 		}
+
 	case "release":
 		if len(args) < 1 {
 			err := fmt.Errorf("error on line %d: release command requires at least 1 argument", lineNumber)
@@ -188,6 +199,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			}
 			time.Sleep(40 * time.Millisecond)
 		}
+
 	case "ifpressed":
 		if len(args) != 1 {
 			err := fmt.Errorf("error on line %d: ifpressed command requires exactly 1 argument", lineNumber)
@@ -197,6 +209,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 		if !sp.pressedKeys[keystr] {
 			sp.executeNextLine = false
 		}
+
 	case "ifnotpressed":
 		if len(args) != 1 {
 			err := fmt.Errorf("error on line %d: ifnotpressed command requires exactly 1 argument", lineNumber)
@@ -206,6 +219,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 		if sp.pressedKeys[keystr] {
 			sp.executeNextLine = false
 		}
+
 	case "wait":
 		if len(args) != 1 {
 			err := fmt.Errorf("error on line %d: wait command requires exactly 1 argument", lineNumber)
@@ -213,13 +227,41 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 		}
 		duration, _ := strconv.Atoi(strings.TrimSpace(args[0]))
 		time.Sleep(time.Duration(duration) * time.Millisecond)
+
 	case "goto":
 		if len(args) != 1 {
 			err := fmt.Errorf("error on line %d: goto command requires exactly 1 argument", lineNumber)
 			return 0, err
 		}
 		label := strings.TrimSpace(args[0])
-		if line, ok := sp.labels[label]; ok {
+
+		if strings.HasPrefix(label, "@f") {
+			steps := len(label) - 1 // Number of 'f' characters
+			count := 0
+			for i := 0; i < len(sp.anonymousLabels); i++ {
+				if sp.anonymousLabels[i] > lineNumber {
+					count++
+					if count == steps {
+						return sp.anonymousLabels[i], nil
+					}
+				}
+			}
+			err := fmt.Errorf("error on line %d: No sufficient forward anonymous labels found", lineNumber)
+			return 0, err
+		} else if strings.HasPrefix(label, "@b") {
+			steps := len(label) - 1 // Number of 'b' characters
+			count := 0
+			for i := len(sp.anonymousLabels) - 1; i >= 0; i-- {
+				if sp.anonymousLabels[i] < lineNumber {
+					count++
+					if count == steps {
+						return sp.anonymousLabels[i], nil
+					}
+				}
+			}
+			err := fmt.Errorf("error on line %d: No sufficient backward anonymous labels found", lineNumber)
+			return 0, err
+		} else if line, ok := sp.labels[label]; ok {
 			return line, nil
 		} else {
 			err := fmt.Errorf("error on line %d: Undefined label: %s", lineNumber, label)
@@ -252,6 +294,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 		returnAddress := sp.returnStack[len(sp.returnStack)-1]
 		sp.returnStack = sp.returnStack[:len(sp.returnStack)-1] // Pop the return address
 		return returnAddress, nil
+
 	case "set":
 		if len(args) != 2 {
 			err := fmt.Errorf("error on line %d: set command requires exactly 2 arguments", lineNumber)
@@ -260,6 +303,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 		varName := strings.TrimSpace(args[0])
 		value, _ := strconv.Atoi(strings.TrimSpace(args[1]))
 		sp.variables[varName] = value
+
 	case "add":
 		if len(args) != 2 {
 			err := fmt.Errorf("error on line %d: add command requires exactly 2 arguments", lineNumber)
@@ -273,6 +317,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			err := fmt.Errorf("error on line %d: Variable not declared: %s", lineNumber, varName)
 			return 0, err
 		}
+
 	case "sub":
 		if len(args) != 2 {
 			err := fmt.Errorf("error on line %d: sub command requires exactly 2 arguments", lineNumber)
@@ -286,6 +331,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			err := fmt.Errorf("error on line %d: Variable not declared: %s", lineNumber, varName)
 			return 0, err
 		}
+
 	case "ifequal":
 		if len(args) != 2 {
 			err := fmt.Errorf("error on line %d: ifequal command requires exactly 2 arguments", lineNumber)
@@ -301,6 +347,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			err := fmt.Errorf("error on line %d: Variable not declared: %s", lineNumber, varName)
 			return 0, err
 		}
+
 	case "ifgreater":
 		if len(args) != 2 {
 			err := fmt.Errorf("error on line %d: ifgreater command requires exactly 2 arguments", lineNumber)
@@ -316,6 +363,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			err := fmt.Errorf("error on line %d: Variable not declared: %s", lineNumber, varName)
 			return 0, err
 		}
+
 	case "ifless":
 		if len(args) != 2 {
 			err := fmt.Errorf("error on line %d: ifless command requires exactly 2 arguments", lineNumber)
@@ -331,6 +379,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			err := fmt.Errorf("error on line %d: Variable not declared: %s", lineNumber, varName)
 			return 0, err
 		}
+
 	case "savecolor":
 		if len(args) != 2 {
 			err := fmt.Errorf("error on line %d: savecolor command requires exactly 2 arguments", lineNumber)
