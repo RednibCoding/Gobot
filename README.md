@@ -13,6 +13,12 @@ From the root directory of the project run:
 go build -ldflags="-s -w" .
 ```
 
+## Run
+From the root directory of the project run: 
+```
+gobot <script-file>
+```
+
 ## General Script-Syntax
 - A script is composed of a list of [commands](#commands). See [Examples](#examples).
 - Commands that have arguments should be followed by a colon, and the arguments should be separated by commas.
