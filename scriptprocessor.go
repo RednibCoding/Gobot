@@ -220,7 +220,7 @@ func (sp *ScriptProcessor) executeCommand(command string, args []string, lineNum
 			arg = strings.TrimSpace(arg)
 			key := sp.keyMap[arg]
 			if key != "" {
-				if key == "left" || key == "right" {
+				if key == "left" || key == "right" || key == "center" {
 					robotgo.Toggle(key, "up")
 				} else {
 					robotgo.KeyToggle(key, "up")
