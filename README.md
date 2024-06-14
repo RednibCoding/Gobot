@@ -20,6 +20,8 @@ From the root directory of the project run:
 gobot <script-file>.tin
 ```
 
+>**Note:** Pressing `ESC` will stop the script immediately!
+
 ## Automation Functions
 
 ### keytap

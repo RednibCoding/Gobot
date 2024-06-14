@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/RednibCoding/tinvm"
+	hook "github.com/robotn/gohook"
 )
 
 func main() {
@@ -20,6 +21,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	go createEscHook()
+
 	vm := tinvm.New()
 
 	vm.AddFunction("move", customFunction_Move)
@@ -31,4 +34,15 @@ func main() {
 	vm.AddFunction("colormatch", customFunction_ColorMatch)
 
 	vm.Run(string(source), args[1])
+}
+
+func createEscHook() {
+	esc := hook.AddEvent("esc")
+	if esc {
+		fmt.Println("Pressed ESC: quitting...")
+		os.Exit(0)
+	}
+
+	hook.Start()
+	defer hook.End()
 }

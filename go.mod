@@ -5,6 +5,7 @@ go 1.22
 require (
 	github.com/RednibCoding/tinvm v1.0.7
 	github.com/go-vgo/robotgo v0.110.1
+	github.com/robotn/gohook v0.41.0
 )
 
 require (
