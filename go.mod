@@ -3,7 +3,7 @@ module gobot
 go 1.22
 
 require (
-	github.com/RednibCoding/tinvm v1.0.6
+	github.com/RednibCoding/tinvm v1.0.7
 	github.com/go-vgo/robotgo v0.110.1
 )
 
