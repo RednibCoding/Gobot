@@ -1,38 +1,34 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
+
+	"github.com/RednibCoding/tinvm"
 )
 
 func main() {
-	args := os.Args
-	if len(args) != 2 {
+	args := []string{"gobot.exe", "test.tin"}
+	// args := os.Args
+	if len(args) < 2 {
 		fmt.Println("Usage: gobot <script-file>")
-		os.Exit(0)
+		os.Exit(1)
 	}
-	scriptpath := os.Args[1] + ".gb"
-	// scriptpath := "test.gb"
-
-	if _, err := os.Stat(scriptpath); os.IsNotExist(err) {
-		fmt.Printf("%s not found\n", scriptpath)
-		os.Exit(0)
-	}
-
-	file, err := os.Open(scriptpath)
+	source, err := os.ReadFile(args[1])
 	if err != nil {
-		fmt.Println("Error opening script file:", err)
-		return
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	var lines []string
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		fmt.Printf("ERROR: Can't find source file '%s'.\n", args[1])
+		os.Exit(1)
 	}
 
-	sp := NewScriptProcessor()
-	sp.executeScript(lines)
+	vm := tinvm.New()
+
+	vm.AddFunction("move", customFunction_Move)
+	vm.AddFunction("mouseclick", customFunction_MouseClick)
+	vm.AddFunction("keytap", customFunction_KeyTap)
+	vm.AddFunction("keypress", customFunction_KeyPress)
+	vm.AddFunction("keyrelease", customFunction_KeyRelease)
+	vm.AddFunction("getcolor", customFunction_GetColor)
+	vm.AddFunction("colormatch", customFunction_ColorMatch)
+
+	vm.Run(string(source), args[1])
 }
