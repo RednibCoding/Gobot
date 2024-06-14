@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/RednibCoding/tinvm"
 	"github.com/go-vgo/robotgo"
@@ -40,7 +41,11 @@ func customFunction_MouseClick(vm *tinvm.TinVM, args []interface{}) error {
 		return fmt.Errorf("argument must be of type string, got: %T", button)
 	}
 
-	robotgo.Click(button)
+	time.Sleep(time.Duration(50) * time.Millisecond)
+	robotgo.Toggle(button, "down")
+	time.Sleep(time.Duration(80) * time.Millisecond)
+	robotgo.Toggle(button, "up")
+	time.Sleep(time.Duration(50) * time.Millisecond)
 	return nil
 }
 
