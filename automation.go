@@ -39,11 +39,11 @@ func customFunction_MouseClick(vm *tinvm.TinVM, args []interface{}) error {
 		return fmt.Errorf("argument must be of type string, got: %T", button)
 	}
 
-	time.Sleep(time.Duration(50) * time.Millisecond)
-	robotgo.Toggle(button, "down")
 	time.Sleep(time.Duration(80) * time.Millisecond)
+	robotgo.Toggle(button, "down")
+	time.Sleep(time.Duration(100) * time.Millisecond)
 	robotgo.Toggle(button, "up")
-	time.Sleep(time.Duration(50) * time.Millisecond)
+	time.Sleep(time.Duration(80) * time.Millisecond)
 	return nil
 }
 
