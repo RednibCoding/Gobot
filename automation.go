@@ -23,8 +23,6 @@ func customFunction_Move(vm *tinvm.TinVM, args []interface{}) error {
 		return fmt.Errorf("both arguments must be of type int, got %T and %T", x, y)
 	}
 
-	fmt.Printf("x: %d, y: %d\n", x, y)
-
 	robotgo.Move(x, y)
 	return nil
 }
