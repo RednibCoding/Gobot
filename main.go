@@ -4,16 +4,12 @@ import (
 	"fmt"
 	"os"
 
-<<<<<<< HEAD
 	"github.com/RednibCoding/runevm"
-=======
-	"github.com/RednibCoding/tinvm"
 	hook "github.com/robotn/gohook"
->>>>>>> 009fabfb2a058d8b4d0a632d5f0f851ec0578b73
 )
 
 func main() {
-	// args := []string{"gobot.exe", "test.tin"}
+	// args := []string{"gobot.exe", "test.rune"}
 	args := os.Args
 	if len(args) < 2 {
 		fmt.Println("Usage: gobot <script-file>")
@@ -25,13 +21,9 @@ func main() {
 		os.Exit(1)
 	}
 
-<<<<<<< HEAD
 	filepath := args[1]
-=======
-	go createEscHook()
 
-	vm := tinvm.New()
->>>>>>> 009fabfb2a058d8b4d0a632d5f0f851ec0578b73
+	go createEscHook()
 
 	vm := runevm.NewRuneVM()
 
@@ -44,10 +36,6 @@ func main() {
 	vm.SetFun("colormatch", customFunction_ColorMatch)
 
 	vm.Run(string(source), filepath)
-
-	// vm := tinvm.New()
-
-	// vm.Run(string(source), args[1])
 }
 
 func createEscHook() {
