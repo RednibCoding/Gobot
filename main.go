@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/RednibCoding/tinvm"
+	"github.com/RednibCoding/runevm"
 )
 
 func main() {
@@ -20,15 +20,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	vm := tinvm.New()
+	filepath := args[1]
 
-	vm.AddFunction("move", customFunction_Move)
-	vm.AddFunction("mouseclick", customFunction_MouseClick)
-	vm.AddFunction("keytap", customFunction_KeyTap)
-	vm.AddFunction("keypress", customFunction_KeyPress)
-	vm.AddFunction("keyrelease", customFunction_KeyRelease)
-	vm.AddFunction("getcolor", customFunction_GetColor)
-	vm.AddFunction("colormatch", customFunction_ColorMatch)
+	vm := runevm.NewRuneVM()
 
-	vm.Run(string(source), args[1])
+	vm.SetFun("move", customFunction_Move)
+	vm.SetFun("mouseclick", customFunction_MouseClick)
+	vm.SetFun("keytap", customFunction_KeyTap)
+	vm.SetFun("keypress", customFunction_KeyPress)
+	vm.SetFun("keyrelease", customFunction_KeyRelease)
+	vm.SetFun("getcolor", customFunction_GetColor)
+	vm.SetFun("colormatch", customFunction_ColorMatch)
+
+	vm.Run(string(source), filepath)
+
+	// vm := tinvm.New()
+
+	// vm.Run(string(source), args[1])
 }

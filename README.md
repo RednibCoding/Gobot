@@ -6,7 +6,7 @@ See [Commands](#commands) section for a list of commands supported by Gobot and 
 
 ## Dependencies
 - Gobot depends on [robotgo](https://github.com/go-vgo/robotgo) (see dependencies of robotgo).
-- Gobot used the tiny and easy [tin scripting language](https://github.com/RednibCoding/tinvm) for scripting
+- Gobot used the tiny and easy [rune scripting language](https://github.com/RednibCoding/runevm) for scripting
 
 ## Build
 From the root directory of the project run: 
@@ -23,57 +23,56 @@ gobot <script-file>.tin
 ## Automation Functions
 
 ### keytap
-- **Syntax**: `keytap: <key1>, <key2>, ...`
+- **Syntax**: `keytap(<key1>, <key2>, ...)`
 - **Description**: Presses the specified key combination and releases it.
-- **Example**: `press: lshift, a`
+- **Example**: `press(lshift, a)`
 
 ### keypress
-- **Syntax**: `keypress: <key1>, <key2>, ...`
+- **Syntax**: `keypress(<key1>, <key2>, ...)`
 - **Description**: Presses the specified key combination.
-- **Example**: `keypress: lshift, a`
+- **Example**: `keypress(lshift, a)`
 
 ### keyrelease
-- **Syntax**: `keyrelease: <key1>, <key2>, ...`
+- **Syntax**: `keyrelease(<key1>, <key2>, ...)`
 - **Description**: Releases the specified key combination.
-- **Example**: `keyrelease: lshift, a`
+- **Example**: `keyrelease(lshift, a)`
 
 ### move
-- **Syntax**: `move: <x>, <y>`
+- **Syntax**: `move(<x>, <y>)`
 - **Description**: Moves the mouse to the specified coordinates.
-- **Example**: `move: 100, 200`
+- **Example**: `move(100, 200)`
 
 ### getcolor
-- **Syntax**: `getcolor: <result>, <x>, <y>`
+- **Syntax**: `getcolor(<x>, <y>)`
 - **Description**: Retrieves the color at the specified screen coordinates and stores it in the given result variable. If the variable does not exist, it is created as a variable of type string.
-- **Example**: `getcolor: mySavedColor, 100, 150`
+- **Example**: `color = getcolor(100, 150)`
 
 ### colormatch
-- **Syntax**: `colormatch: <result> <color1>, <color2>, <threshold>`
+- **Syntax**: `colormatch(<color1>, <color2>, <threshold>)`
 - **Description**: Compares two colors to see if they match within the specified threshold. The result is then saved in the given result variable. If the variable does not exist, it is created. Result can be 0 = colors do not match or 1 = colors match. Colors must be hex values preceded by `#`.
-- **Example**: `colormatch: "isMatch", myColor, "#deadbeef", "#10"`
+- **Example**: `isMatch = colormatch(myColor, "#deadbeef", "#10")`
 
 ## Examples
 
 ### Example 1: Simple Print
 ```
-println "Hello, World!"
-println "This is Gobot."
+println("Hello, World!")
+println("This is Gobot.")
 ```
 
 ### Example 2: Mouse Movement and Click
 ```
-move: 100, 200
-press: "lmouse"
-wait: 500
-release: "lmouse"
+move(100, 200)
+press("lmouse")
+wait(500)
+release("lmouse")
 ```
 
 ### Example 3: Color Checking
 ```
-; the myColor variable will be created automatically
-getcolor "myColor", 175, 40
-println myColor
-colormatch "isMatch", myColor, "#fed668", #01
+myColor = getcolor(175, 40)
+println(myColor)
+isMatch = colormatch(myColor, "#fed668", #01)
 
 if isMatch {
     println "colors match :)"

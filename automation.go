@@ -5,11 +5,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/RednibCoding/tinvm"
 	"github.com/go-vgo/robotgo"
 )
 
-func customFunction_Move(vm *tinvm.TinVM, args []interface{}) error {
+func customFunction_Move(args ...interface{}) interface{} {
 	if len(args) != 2 {
 		return fmt.Errorf("move requires exactly 2 arguments")
 	}
@@ -28,7 +27,7 @@ func customFunction_Move(vm *tinvm.TinVM, args []interface{}) error {
 	return nil
 }
 
-func customFunction_MouseClick(vm *tinvm.TinVM, args []interface{}) error {
+func customFunction_MouseClick(args ...interface{}) interface{} {
 	if len(args) != 1 {
 		return fmt.Errorf("mouseclick requires exactly 1 argument")
 	}
@@ -44,7 +43,7 @@ func customFunction_MouseClick(vm *tinvm.TinVM, args []interface{}) error {
 	return nil
 }
 
-func customFunction_KeyTap(vm *tinvm.TinVM, args []interface{}) error {
+func customFunction_KeyTap(args ...interface{}) interface{} {
 	if len(args) < 1 {
 		return fmt.Errorf("keytap requires at least 1 argument")
 	}
@@ -73,7 +72,7 @@ func customFunction_KeyTap(vm *tinvm.TinVM, args []interface{}) error {
 	return nil
 }
 
-func customFunction_KeyPress(vm *tinvm.TinVM, args []interface{}) error {
+func customFunction_KeyPress(args ...interface{}) interface{} {
 	if len(args) < 1 {
 		return fmt.Errorf("keypress requires at least 1 argument")
 	}
@@ -102,7 +101,7 @@ func customFunction_KeyPress(vm *tinvm.TinVM, args []interface{}) error {
 	return nil
 }
 
-func customFunction_KeyRelease(vm *tinvm.TinVM, args []interface{}) error {
+func customFunction_KeyRelease(args ...interface{}) interface{} {
 	if len(args) < 1 {
 		return fmt.Errorf("keyrelease requires at least 1 argument")
 	}
@@ -131,56 +130,42 @@ func customFunction_KeyRelease(vm *tinvm.TinVM, args []interface{}) error {
 	return nil
 }
 
-func customFunction_GetColor(vm *tinvm.TinVM, args []interface{}) error {
-	if len(args) != 3 {
+func customFunction_GetColor(args ...interface{}) interface{} {
+	if len(args) != 2 {
 		return fmt.Errorf("getcolor requires exactly 3 argument")
 	}
 
 	// Using type assertions to check if variables are of correct type
-	varname, ok1 := args[0].(string) // name of return variable
-	x, ok2 := args[1].(int)
-	y, ok3 := args[2].(int)
+	x, ok1 := args[1].(int)
+	y, ok2 := args[2].(int)
 
-	if !ok1 {
-		return fmt.Errorf("argument for variable name must be of type string, got %T", varname)
-	}
-
-	if !ok2 || !ok3 {
+	if !ok1 || !ok2 {
 		return fmt.Errorf("argument for x and y must be of type int, got %T and %T", x, y)
 	}
 
-	varname = strings.TrimSpace(varname)
-
 	color := robotgo.GetPixelColor(x, y)
-	vm.AddVariable(varname, "#"+color)
 
-	return nil
+	return color
 }
 
-func customFunction_ColorMatch(vm *tinvm.TinVM, args []interface{}) error {
+func customFunction_ColorMatch(args ...interface{}) interface{} {
 	if len(args) != 4 {
 		return fmt.Errorf("getcolor requires exactly 4 argument")
 	}
 
 	// Using type assertions to check if variables are of correct type
-	varname, ok1 := args[0].(string) // name of return variable
-	color1, ok2 := args[1].(string)
-	color2, ok3 := args[2].(string)
-	threshold, ok4 := args[3].(string)
+	color1, ok1 := args[1].(string)
+	color2, ok2 := args[2].(string)
+	threshold, ok3 := args[3].(string)
 
-	if !ok1 {
-		return fmt.Errorf("argument for variable name must be of type string, got %T", varname)
-	}
-
-	if !ok2 || !ok3 {
+	if !ok1 || !ok2 {
 		return fmt.Errorf("argument for color 1 and color 2 must be of type string, got %T and %T", color1, color2)
 	}
 
-	if !ok4 {
+	if !ok3 {
 		return fmt.Errorf("argument for threshold must be of type string, got %T", threshold)
 	}
 
-	varname = strings.TrimSpace(varname)
 	color1 = strings.TrimSpace(color1)
 	color2 = strings.TrimSpace(color2)
 	threshold = strings.TrimSpace(threshold)
@@ -203,13 +188,11 @@ func customFunction_ColorMatch(vm *tinvm.TinVM, args []interface{}) error {
 		return fmt.Errorf("threshold is not a valid hexadecimal number: %s", threshold)
 	}
 
-	returnResult := 0 // false
+	returnResult := false
 
 	if colorsMatch(color1, color2, int(thresholdInt)) {
-		returnResult = 1 // true
+		returnResult = true
 	}
 
-	vm.AddVariable(varname, returnResult)
-
-	return nil
+	return returnResult
 }
