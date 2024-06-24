@@ -17,7 +17,7 @@ go build -ldflags="-s -w" .
 ## Run
 From the root directory of the project run: 
 ```
-gobot <script-file>.tin
+gobot <script-file>.rune
 ```
 
 >**Note:** Pressing `ESC` will stop the script immediately!
