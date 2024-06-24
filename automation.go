@@ -19,6 +19,7 @@ func customFunction_Move(args ...interface{}) interface{} {
 	y, ok2 := args[1].(int)
 
 	if !ok1 || !ok2 {
+		fmt.Printf("x: %v, y: %v\n", x, y)
 		return fmt.Errorf("both arguments must be of type int, got %T and %T", x, y)
 	}
 
@@ -135,12 +136,12 @@ func customFunction_KeyRelease(args ...interface{}) interface{} {
 
 func customFunction_GetColor(args ...interface{}) interface{} {
 	if len(args) != 2 {
-		return fmt.Errorf("getcolor requires exactly 3 argument")
+		return fmt.Errorf("getcolor requires exactly 2 argument")
 	}
 
 	// Using type assertions to check if variables are of correct type
-	x, ok1 := args[1].(int)
-	y, ok2 := args[2].(int)
+	x, ok1 := args[0].(int)
+	y, ok2 := args[1].(int)
 
 	if !ok1 || !ok2 {
 		return fmt.Errorf("argument for x and y must be of type int, got %T and %T", x, y)
@@ -152,14 +153,14 @@ func customFunction_GetColor(args ...interface{}) interface{} {
 }
 
 func customFunction_ColorMatch(args ...interface{}) interface{} {
-	if len(args) != 4 {
-		return fmt.Errorf("getcolor requires exactly 4 argument")
+	if len(args) != 3 {
+		return fmt.Errorf("colormatch requires exactly 3 argument")
 	}
 
 	// Using type assertions to check if variables are of correct type
-	color1, ok1 := args[1].(string)
-	color2, ok2 := args[2].(string)
-	threshold, ok3 := args[3].(string)
+	color1, ok1 := args[0].(string)
+	color2, ok2 := args[1].(string)
+	threshold, ok3 := args[2].(string)
 
 	if !ok1 || !ok2 {
 		return fmt.Errorf("argument for color 1 and color 2 must be of type string, got %T and %T", color1, color2)

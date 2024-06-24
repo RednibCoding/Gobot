@@ -9,8 +9,8 @@ import (
 )
 
 func main() {
-	// args := []string{"gobot.exe", "test.rune"}
-	args := os.Args
+	args := []string{"gobot.exe", "rs_nails.rune"}
+	// args := os.Args
 	if len(args) < 2 {
 		fmt.Println("Usage: gobot <script-file>")
 		os.Exit(1)
