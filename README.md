@@ -65,9 +65,9 @@ println("This is Gobot.")
 ### Example 2: Mouse Movement and Click
 ```
 move(100, 200)
-press("lmouse")
+mouseclick("left")
 wait(500)
-release("lmouse")
+mouseclick("left")
 ```
 
 ### Example 3: Color Checking
@@ -79,7 +79,7 @@ isMatch = colormatch(myColor, "#fed668", #01)
 if isMatch {
     println "colors match :)"
 } else {
-	println "colors do not match"
+    println "colors do not match"
 }
 ```
 
