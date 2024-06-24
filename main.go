@@ -4,12 +4,17 @@ import (
 	"fmt"
 	"os"
 
+<<<<<<< HEAD
 	"github.com/RednibCoding/runevm"
+=======
+	"github.com/RednibCoding/tinvm"
+	hook "github.com/robotn/gohook"
+>>>>>>> 009fabfb2a058d8b4d0a632d5f0f851ec0578b73
 )
 
 func main() {
-	args := []string{"gobot.exe", "test.tin"}
-	// args := os.Args
+	// args := []string{"gobot.exe", "test.tin"}
+	args := os.Args
 	if len(args) < 2 {
 		fmt.Println("Usage: gobot <script-file>")
 		os.Exit(1)
@@ -20,7 +25,13 @@ func main() {
 		os.Exit(1)
 	}
 
+<<<<<<< HEAD
 	filepath := args[1]
+=======
+	go createEscHook()
+
+	vm := tinvm.New()
+>>>>>>> 009fabfb2a058d8b4d0a632d5f0f851ec0578b73
 
 	vm := runevm.NewRuneVM()
 
@@ -37,4 +48,15 @@ func main() {
 	// vm := tinvm.New()
 
 	// vm.Run(string(source), args[1])
+}
+
+func createEscHook() {
+	esc := hook.AddEvent("esc")
+	if esc {
+		fmt.Println("Pressed ESC: quitting...")
+		os.Exit(0)
+	}
+
+	hook.Start()
+	defer hook.End()
 }

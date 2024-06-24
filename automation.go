@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-vgo/robotgo"
 )
@@ -21,8 +22,6 @@ func customFunction_Move(args ...interface{}) interface{} {
 		return fmt.Errorf("both arguments must be of type int, got %T and %T", x, y)
 	}
 
-	fmt.Printf("x: %d, y: %d\n", x, y)
-
 	robotgo.Move(x, y)
 	return nil
 }
@@ -39,7 +38,11 @@ func customFunction_MouseClick(args ...interface{}) interface{} {
 		return fmt.Errorf("argument must be of type string, got: %T", button)
 	}
 
-	robotgo.Click(button)
+	time.Sleep(time.Duration(80) * time.Millisecond)
+	robotgo.Toggle(button, "down")
+	time.Sleep(time.Duration(100) * time.Millisecond)
+	robotgo.Toggle(button, "up")
+	time.Sleep(time.Duration(80) * time.Millisecond)
 	return nil
 }
 

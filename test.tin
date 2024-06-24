@@ -1,19 +1,10 @@
 println "Welcome in the Bot script"
-println "Moving the mouse now... "
-move 1017, 83
 
-mouseclick "right"
-
-getcolor "coffer", 324, 150
-
-println coffer
-
-colormatch "doesMatch", coffer, "#111111", "#00"
-
-if doesMatch {
-    println "Colors match."
-} else {
-    println "Colors do not match. Color is: ", coffer
+def checkColor {
+    getcolor "color1", 324, 150
+    println color1
 }
+
+call checkColor
 
 println "Finish moving the mouse"
