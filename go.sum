@@ -1,7 +1,7 @@
 github.com/BurntSushi/freetype-go v0.0.0-20160129220410-b763ddbfe298/go.mod h1:D+QujdIlUNfa0igpNMk6UIvlb6C252URs4yupRUV4lQ=
 github.com/BurntSushi/graphics-go v0.0.0-20160129215708-b43f31a4a966/go.mod h1:Mid70uvE93zn9wgF92A/r5ixgnvX8Lh68fxp9KQBaI0=
-github.com/RednibCoding/runevm v0.1.44 h1:NABcRtnWzBBsbLUSblBGS6J4Uw1Ep3jmLAIqw5kH6Wk=
-github.com/RednibCoding/runevm v0.1.44/go.mod h1:l3akowA0kmWzCpMzWasdryOgQyEezf/4NnklYTVUwxY=
+github.com/RednibCoding/runevm v0.1.45 h1:bx/ly08I5BxowPcgWhUSzaxKiIK1zwXpIySmdOb06Ek=
+github.com/RednibCoding/runevm v0.1.45/go.mod h1:l3akowA0kmWzCpMzWasdryOgQyEezf/4NnklYTVUwxY=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/gen2brain/shm v0.1.0 h1:MwPeg+zJQXN0RM9o+HqaSFypNoNEcNpeoGp0BTSx2YY=
