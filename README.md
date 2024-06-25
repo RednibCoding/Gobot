@@ -17,7 +17,7 @@ go build -ldflags="-s -w" .
 ## Run
 From the root directory of the project run: 
 ```
-gobot <script-file>.tin
+gobot <script-file>.rune
 ```
 
 >**Note:** Pressing `ESC` will stop the script immediately!
@@ -65,9 +65,9 @@ println("This is Gobot.")
 ### Example 2: Mouse Movement and Click
 ```
 move(100, 200)
-press("lmouse")
+mouseclick("left")
 wait(500)
-release("lmouse")
+mouseclick("left")
 ```
 
 ### Example 3: Color Checking
@@ -79,7 +79,7 @@ isMatch = colormatch(myColor, "#fed668", #01)
 if isMatch {
     println "colors match :)"
 } else {
-	println "colors do not match"
+    println "colors do not match"
 }
 ```
 
