@@ -5,7 +5,8 @@ Gobot is an automation tool that allows you to script various keyboard and mouse
 See [Commands](#commands) section for a list of commands supported by Gobot and their functionalities.
 
 ## Dependencies
-- Gobot depends on [robotgo](https://github.com/go-vgo/robotgo) (see dependencies of robotgo).
+- [robotgo](https://github.com/go-vgo/robotgo) (see dependencies of robotgo).
+- [gohook](github.com/robotn/gohook)
 - Gobot used the tiny and easy [rune scripting language](https://github.com/RednibCoding/runevm) for scripting
 
 ## Build
